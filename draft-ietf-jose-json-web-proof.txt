@@ -5,9 +5,9 @@
 jose                                                           J. Miller
 Internet-Draft                                                  D. Waite
 Intended status: Standards Track                           Ping Identity
-Expires: 24 January 2025                                        M. Jones
+Expires: 3 February 2025                                        M. Jones
                                                   Self-Issued Consulting
-                                                            23 July 2024
+                                                           2 August 2024
 
 
                              JSON Web Proof
@@ -45,7 +45,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 24 January 2025.
+   This Internet-Draft will expire on 3 February 2025.
 
 Copyright Notice
 
@@ -163,6 +163,14 @@ Table of Contents
    potentially only a subset of the original claims, predicate proofs
    about the claim values, or proofs of knowledge of the claims.
 
+   |  Editor's Note: This draft is still early and incomplete.  There
+   |  will be significant changes to the algorithms as currently defined
+   |  here.  Please do not use any of these definitions or examples for
+   |  anything except personal experimentation and learning.
+   |  Contributions and feedback are welcomed at https://github.com/
+   |  ietf-wg-jose/json-web-proof (https://github.com/ietf-wg-jose/json-
+   |  web-proof).
+
 2.  Conventions and Definitions
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
@@ -209,7 +217,7 @@ Table of Contents
    instead of a single one.  JWP-supporting algorithms are then able to
    separate and act on the individual payloads contained within.
 
-   The intent of JSON Web Proofs is to establish a common container
+   The intent of JSON Web Proof is to establish a common container
    format for multiple payloads that can be integrity-verified against a
    cryptographic proof value also in the container.  It does not create
    or specify any cryptographic protocols, multi-party protocols, or
@@ -652,14 +660,14 @@ Table of Contents
    eyJhbGciOiJCQlMtUFJPT0YiLCJhdWQiOiJodHRwczovL3JlY2lwaWVudC5leGFtcGxlL
    mNvbSIsIm5vbmNlIjoid3JtQlJrS3RYalEifQ.eyJraWQiOiJIamZjcHlqdVpRLU84WWU
    yaFFuTmJUOVJiYm5yb2JwdGRuRXhSMERValU4IiwiYWxnIjoiQkJTIn0.MTcxNDUyMTYw
-   MA~MTcxNzE5OTk5OQ~IkRvZSI~IkpheSI~~~.hejF8lo8RYEoZ7ENvcM9dZgJepBWe2XV
-   Xyn4ah66i_Xiv9RNj9ZbdNc079FrKGv6tCEcOxlvHl2jVbY1pygbz4rjSp8nUVjkCc-VG
-   yljwjX_Lr_NR0lMR35qPyh1dkKiq8HHfV2Z5tXqDsjf0TmOqtzcFrwjihwg2GTGc3eRKd
-   Sdm2vwObdly9Th9z-Eq36JASMfQGdcEapcUkGlmKAPejlSpCQpm4sUOw_W2COt0MIMCL_
-   c4Qs1Jy7bFRYcDCku-QtTeDxspjHae3KSCg-JCwoIy2ZkQCrDtCDb0EMydrPGhZxxxCc2
-   N_ebg7GpbY7iSf3N0KBpELEYo9tiwUzHH8B4ta3FwZ_65Ve8lIH_8e8Ti3_Zo1JMWb2H5
-   ZA52zby2yOs3d39mx8YUdIoNfxlXzVW93-IOLcemmC72J79MN7ZI9KG6qD7SpVx44GJQt
-   gAb2hhHMr76sECHIqIA1Yb-tajtxB7vWf7JxXaSNFAvUM
+   MA~MTcxNzE5OTk5OQ~IkRvZSI~IkpheSI~~~.sQeojxb0OUm9MVzsOg7_hQfziXRk0Rtn
+   zH8NkS6M3AdP-pA_1ZGIJVRKQCbVrdUqinhtId6CTaqFoFKOWWLu2pkQ0ZbrhSIEsRUaL
+   D3a4Y8qkv1fRVk6YQvxxGdUzb2yuVooncwBLQejYVgBWP8NhhqiBUb0hBeLtWccTHy-FX
+   D0pEnOuOvQp_-LBUqIJUqRXA_qUa0hglykvdhn0YKyrI_cirhgA6WxAoZpUXeRNDNivtP
+   WO0JtwxPMSp8NPkyCD6hhLjIzymIb-wQRnVEL6CBM-jr3aIrBfSkelcHUqwHKrJrjb78R
+   9HXyDrHPiWFUU5PeIuNrJ-wXmkTtNV_L1PreBArnxp1Qmd726_jkS0AoGd1bz5yAmgJ-M
+   RE9BAmNbX2quXLCrqOCF2nRTRBm8wpZ_I1cdaLH1maXKntbNq104O7_XksZm6AG0__0ei
+   DXGVBLKV-hawoobHlURsPY_9PC7_TLk4py1845ccsgaRo
 
    |  Figure: Compact Serialization of Presentation
 
@@ -692,14 +700,14 @@ Table of Contents
        null
      ],
      "proof": [
-       "hejF8lo8RYEoZ7ENvcM9dZgJepBWe2XVXyn4ah66i_Xiv9RNj9ZbdNc079FrKGv6
-          tCEcOxlvHl2jVbY1pygbz4rjSp8nUVjkCc-VGyljwjX_Lr_NR0lMR35qPyh1dk
-          Kiq8HHfV2Z5tXqDsjf0TmOqtzcFrwjihwg2GTGc3eRKdSdm2vwObdly9Th9z-E
-          q36JASMfQGdcEapcUkGlmKAPejlSpCQpm4sUOw_W2COt0MIMCL_c4Qs1Jy7bFR
-          YcDCku-QtTeDxspjHae3KSCg-JCwoIy2ZkQCrDtCDb0EMydrPGhZxxxCc2N_eb
-          g7GpbY7iSf3N0KBpELEYo9tiwUzHH8B4ta3FwZ_65Ve8lIH_8e8Ti3_Zo1JMWb
-          2H5ZA52zby2yOs3d39mx8YUdIoNfxlXzVW93-IOLcemmC72J79MN7ZI9KG6qD7
-          SpVx44GJQtgAb2hhHMr76sECHIqIA1Yb-tajtxB7vWf7JxXaSNFAvUM"
+       "sQeojxb0OUm9MVzsOg7_hQfziXRk0RtnzH8NkS6M3AdP-pA_1ZGIJVRKQCbVrdUq
+          inhtId6CTaqFoFKOWWLu2pkQ0ZbrhSIEsRUaLD3a4Y8qkv1fRVk6YQvxxGdUzb
+          2yuVooncwBLQejYVgBWP8NhhqiBUb0hBeLtWccTHy-FXD0pEnOuOvQp_-LBUqI
+          JUqRXA_qUa0hglykvdhn0YKyrI_cirhgA6WxAoZpUXeRNDNivtPWO0JtwxPMSp
+          8NPkyCD6hhLjIzymIb-wQRnVEL6CBM-jr3aIrBfSkelcHUqwHKrJrjb78R9HXy
+          DrHPiWFUU5PeIuNrJ-wXmkTtNV_L1PreBArnxp1Qmd726_jkS0AoGd1bz5yAmg
+          J-MRE9BAmNbX2quXLCrqOCF2nRTRBm8wpZ_I1cdaLH1maXKntbNq104O7_XksZ
+          m6AG0__0eiDXGVBLKV-hawoobHlURsPY_9PC7_TLk4py1845ccsgaRo"
      ]
    }
 
@@ -976,16 +984,16 @@ Table of Contents
    [I-D.ietf-jose-json-proof-algorithms]
               Miller, J., Jones, M. B., and D. Waite, "JSON Proof
               Algorithms", Work in Progress, Internet-Draft, draft-ietf-
-              jose-json-proof-algorithms-05, 8 July 2024,
-              <https://datatracker.ietf.org/api/v1/doc/document/draft-
-              ietf-jose-json-proof-algorithms/>.
+              jose-json-proof-algorithms-05, 22 July 2024,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-jose-
+              json-proof-algorithms-05>.
 
    [I-D.ietf-jose-json-proof-token]
               Miller, J., Jones, M. B., and D. Waite, "JSON Proof
               Token", Work in Progress, Internet-Draft, draft-ietf-jose-
-              json-proof-token-05, 8 July 2024,
-              <https://datatracker.ietf.org/api/v1/doc/document/draft-
-              ietf-jose-json-proof-token/>.
+              json-proof-token-05, 22 July 2024,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-jose-
+              json-proof-token-05>.
 
    [RFC7519]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web Token
               (JWT)", RFC 7519, DOI 10.17487/RFC7519, May 2015,
@@ -1067,6 +1075,8 @@ Appendix A.  Acknowledgements
 Appendix B.  Document History
 
    [[ To be removed from the final specification ]]
+
+   *  Update reference to new repository home
 
    -05
 

@@ -5,10 +5,10 @@
 jose                                                           J. Miller
 Internet-Draft                                             Ping Identity
 Intended status: Standards Track                                M. Jones
-Expires: 24 January 2025                          Self-Issued Consulting
+Expires: 3 February 2025                          Self-Issued Consulting
                                                                 D. Waite
                                                            Ping Identity
-                                                            23 July 2024
+                                                           2 August 2024
 
 
                             JSON Proof Token
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 24 January 2025.
+   This Internet-Draft will expire on 3 February 2025.
 
 Copyright Notice
 
@@ -101,8 +101,8 @@ Table of Contents
    |  here.  Please do not use any of these definitions or examples for
    |  anything except personal experimentation and learning.
    |  Contributions and feedback are welcomed at https://github.com/
-   |  json-web-proofs/json-web-proofs (https://github.com/json-web-
-   |  proofs/json-web-proofs).
+   |  ietf-wg-jose/json-web-proof (https://github.com/ietf-wg-jose/json-
+   |  web-proof).
 
 2.  Conventions and Definitions
 
@@ -321,8 +321,8 @@ Table of Contents
               Miller, J., Waite, D., and M. B. Jones, "JSON Web Proof",
               Work in Progress, Internet-Draft, draft-ietf-jose-json-
               web-proof-05, 22 July 2024,
-              <https://datatracker.ietf.org/api/v1/doc/document/draft-
-              ietf-jose-json-web-proof/>.
+              <https://datatracker.ietf.org/doc/html/draft-ietf-jose-
+              json-web-proof-05>.
 
    [RFC7519]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web Token
               (JWT)", RFC 7519, DOI 10.17487/RFC7519, May 2015,
@@ -354,6 +354,8 @@ Appendix A.  Acknowledgements
 Appendix B.  Document History
 
    [[ To be removed from the final specification ]]
+
+   *  Update reference to new repository home
 
    -05
 
