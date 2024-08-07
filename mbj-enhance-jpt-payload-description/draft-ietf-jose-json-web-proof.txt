@@ -660,14 +660,14 @@ Table of Contents
    eyJhbGciOiJCQlMtUFJPT0YiLCJhdWQiOiJodHRwczovL3JlY2lwaWVudC5leGFtcGxlL
    mNvbSIsIm5vbmNlIjoid3JtQlJrS3RYalEifQ.eyJraWQiOiJIamZjcHlqdVpRLU84WWU
    yaFFuTmJUOVJiYm5yb2JwdGRuRXhSMERValU4IiwiYWxnIjoiQkJTIn0.MTcxNDUyMTYw
-   MA~MTcxNzE5OTk5OQ~IkRvZSI~IkpheSI~~~.tCXRMZFO6j1VJOfE86B2fRhhrMOf-z_5
-   cEyAmd5U5b6cwape666OBX1IxkVvK_5dkA3GPPayj3xAPcysXvWG9xWdO8z8CN1zac1Oi
-   HQ-3J3yWw8EILKf11L3h7zMfWDVqpVcOXV1rejW7RqzHRj7DobkANs9g2tRQviQGlZ8Ai
-   vQh_qs5LjZpZ1gVEmtNZuKLIxP_drNrM7O_SSMipbi67rqEjo34Kk1gLHbnRBDJbUjZd-
-   34lI2Sbr5QCNNUFvdMK8PZrcp_2KOFjQEyclfCy9HN2QKyVqkBQttJu-Ogo3Zih7J2x7V
-   FuDNFGeEm4OCJlcZ6iYax_oF5147MLMOQ-0CBeUnOF_shFlDggbWmR0R1V4Il6fnqVDmr
-   x_8Jbn2xxUOi3XmSBbgP6ALtHrDhBVwkhp1kbeqgukCZNe2e3s7xZbsAp_Hb1xxvDd4QS
-   r-QdFJIYUxY0ejiREVLJqYRacuuoM8pvGyJzY1auDbtSw
+   MA~MTcxNzE5OTk5OQ~IkRvZSI~IkpheSI~~~.lBDzjbrIWrNCRVEzJweeacJ8S6nseOfO
+   cm-y7KtseherLhXGnHzThaLMhu8GVDktrSyG39eU2HCWfpfBp_kBi8jDMPVwyUZ29HOjd
+   FKHQxEHHNf2vHFEYRZuUpXt-sNpoBYISyvF_vH4kyZs6h87_dW569bXQrk3b4yyV_dcEQ
+   OCHh8qcNteCMXkcxGx-lxvE3wuZ2DIN1Wgrh0UUBPwGpDm7FbESuW-bbWmCgL1DAtKsVp
+   o7qoWFZHv0yC8AErx-HOy0eqmjAfEHuhUv0ueECwy223DvenTLVkMKaQhiQzH65TnPUhe
+   AV1R9qb1pxFdcsVe3dUV6oBuZgNH4CZL8IvoO4bn9afMkLafAYrqoJZEiMu3w4a7gwvbi
+   sfX_Yg_Ummc73XJzHoYvAh5EjbrS2d2d-mXYaqrySzgievj9yCXqepIHyPLkTwejqLIb4
+   9aZxO1B3hO1RI9ZFoG9uxIvp8Mfgu7bMc8joAVLhAQcRk
 
    |  Figure: Compact Serialization of Presentation
 
@@ -700,14 +700,14 @@ Table of Contents
        null
      ],
      "proof": [
-       "tCXRMZFO6j1VJOfE86B2fRhhrMOf-z_5cEyAmd5U5b6cwape666OBX1IxkVvK_5d
-          kA3GPPayj3xAPcysXvWG9xWdO8z8CN1zac1OiHQ-3J3yWw8EILKf11L3h7zMfW
-          DVqpVcOXV1rejW7RqzHRj7DobkANs9g2tRQviQGlZ8AivQh_qs5LjZpZ1gVEmt
-          NZuKLIxP_drNrM7O_SSMipbi67rqEjo34Kk1gLHbnRBDJbUjZd-34lI2Sbr5QC
-          NNUFvdMK8PZrcp_2KOFjQEyclfCy9HN2QKyVqkBQttJu-Ogo3Zih7J2x7VFuDN
-          FGeEm4OCJlcZ6iYax_oF5147MLMOQ-0CBeUnOF_shFlDggbWmR0R1V4Il6fnqV
-          Dmrx_8Jbn2xxUOi3XmSBbgP6ALtHrDhBVwkhp1kbeqgukCZNe2e3s7xZbsAp_H
-          b1xxvDd4QSr-QdFJIYUxY0ejiREVLJqYRacuuoM8pvGyJzY1auDbtSw"
+       "lBDzjbrIWrNCRVEzJweeacJ8S6nseOfOcm-y7KtseherLhXGnHzThaLMhu8GVDkt
+          rSyG39eU2HCWfpfBp_kBi8jDMPVwyUZ29HOjdFKHQxEHHNf2vHFEYRZuUpXt-s
+          NpoBYISyvF_vH4kyZs6h87_dW569bXQrk3b4yyV_dcEQOCHh8qcNteCMXkcxGx
+          -lxvE3wuZ2DIN1Wgrh0UUBPwGpDm7FbESuW-bbWmCgL1DAtKsVpo7qoWFZHv0y
+          C8AErx-HOy0eqmjAfEHuhUv0ueECwy223DvenTLVkMKaQhiQzH65TnPUheAV1R
+          9qb1pxFdcsVe3dUV6oBuZgNH4CZL8IvoO4bn9afMkLafAYrqoJZEiMu3w4a7gw
+          vbisfX_Yg_Ummc73XJzHoYvAh5EjbrS2d2d-mXYaqrySzgievj9yCXqepIHyPL
+          kTwejqLIb49aZxO1B3hO1RI9ZFoG9uxIvp8Mfgu7bMc8joAVLhAQcRk"
      ]
    }
 

@@ -68,7 +68,7 @@ Table of Contents
    5.  Claim Names
    6.  Claims
    7.  Claims ID ("cid") JWP Header Parameter
-   8.  Payloads
+   8.  Presented Claims and Proofs
      8.1.  Disclosed
      8.2.  Undisclosed
      8.3.  Proof Methods
@@ -261,20 +261,17 @@ Table of Contents
      "cid": "guA8PAI14Gkn4273f1rR606yMbRMFg4y"
    }
 
-8.  Payloads
+8.  Presented Claims and Proofs
 
-   |  Editor's Note: This section is incomplete.  Use it only as an
-   |  indicator of the intended direction.
-
-   Application resolves each claim as required when processing the JPT.
-   Resolution can result in one of three things: 1.  A disclosed JSON
-   value. 1.  An indicator that the value was not disclosed. 1.  An
-   algorithm-specific proof method.
+   Each claim in the issued form of the JPT results in one of three
+   things in the presented form of the JPT: 1.  A disclosed JSON value.
+   1.  An indicator that the value was not disclosed. 1.  An algorithm-
+   specific proof method.
 
 8.1.  Disclosed
 
-   A disclosed payloads are represented as a base64url-encoded UTF-
-   encoded octet string representing a valid JSON value.
+   A disclosed payload is represented as a base64url-encoded UTF-encoded
+   octet string representing a valid JSON value.
 
 8.2.  Undisclosed
 
@@ -367,7 +364,7 @@ Appendix B.  Document History
    [[ To be removed from the final specification ]]
 
    *  Update reference to new repository home
-   *  Enhance JPT payload description.
+   *  Fixed #99: Discussed issued and presented forms of JPTs.
 
    -05
 
