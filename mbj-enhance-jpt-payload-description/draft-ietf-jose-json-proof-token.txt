@@ -5,10 +5,10 @@
 jose                                                           J. Miller
 Internet-Draft                                             Ping Identity
 Intended status: Standards Track                                M. Jones
-Expires: 21 February 2025                         Self-Issued Consulting
+Expires: 22 February 2025                         Self-Issued Consulting
                                                                 D. Waite
                                                            Ping Identity
-                                                          20 August 2024
+                                                          21 August 2024
 
 
                             JSON Proof Token
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 21 February 2025.
+   This Internet-Draft will expire on 22 February 2025.
 
 Copyright Notice
 
@@ -72,7 +72,7 @@ Table of Contents
      8.1.  Disclosed
      8.2.  Undisclosed
      8.3.  Proof Methods
-   9.  Example JPT
+   9.  Example JPTs
    10. Security Considerations
    11. IANA Considerations
      11.1.  JSON Web Proof Header Parameters Registration
@@ -276,8 +276,8 @@ Table of Contents
 8.2.  Undisclosed
 
    The placeholder indicating that a payload was not disclosed is
-   represented as a null value for the JWP JSON Serialization or the
-   empty string value for the JWP Compact Serialization.
+   represented as described in Section 6 (Serializations) of
+   [I-D.ietf-jose-json-web-proof].
 
 8.3.  Proof Methods
 
@@ -295,9 +295,10 @@ Table of Contents
       -  knowledge
       -  linking
 
-9.  Example JPT
+9.  Example JPTs
 
-   See the [I-D.ietf-jose-json-web-proof] appendix.
+   See the examples in Appendix A.1 of
+   [I-D.ietf-jose-json-proof-algorithms].
 
 10.  Security Considerations
 
@@ -337,6 +338,13 @@ Table of Contents
               <https://www.rfc-editor.org/info/rfc7519>.
 
 12.2.  Informative References
+
+   [I-D.ietf-jose-json-proof-algorithms]
+              Miller, J., Jones, M. B., and D. Waite, "JSON Proof
+              Algorithms", Work in Progress, Internet-Draft, draft-ietf-
+              jose-json-proof-algorithms-05, 22 July 2024,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-jose-
+              json-proof-algorithms-05>.
 
    [IANA.JWT.Claims]
               IANA, "JSON Web Token Claims",
