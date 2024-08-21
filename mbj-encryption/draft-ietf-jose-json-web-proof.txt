@@ -5,9 +5,9 @@
 jose                                                           J. Miller
 Internet-Draft                                                  D. Waite
 Intended status: Standards Track                           Ping Identity
-Expires: 10 February 2025                                       M. Jones
+Expires: 22 February 2025                                       M. Jones
                                                   Self-Issued Consulting
-                                                           9 August 2024
+                                                          21 August 2024
 
 
                              JSON Web Proof
@@ -45,7 +45,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 10 February 2025.
+   This Internet-Draft will expire on 22 February 2025.
 
 Copyright Notice
 
@@ -661,14 +661,14 @@ Table of Contents
    eyJhbGciOiJCQlMtUFJPT0YiLCJhdWQiOiJodHRwczovL3JlY2lwaWVudC5leGFtcGxlL
    mNvbSIsIm5vbmNlIjoid3JtQlJrS3RYalEifQ.eyJraWQiOiJIamZjcHlqdVpRLU84WWU
    yaFFuTmJUOVJiYm5yb2JwdGRuRXhSMERValU4IiwiYWxnIjoiQkJTIn0.MTcxNDUyMTYw
-   MA~MTcxNzE5OTk5OQ~IkRvZSI~IkpheSI~~~.pwSke-ljeJd7zqSzTU70WIQohnB2aKWU
-   UkXoHyN87opfnUX9ah8viOKvjUuhF7-niJygy2PJ78gVJtOLfm3cE3tEonGJSp2-_ji6W
-   30jpaRTl5WJhnoIbieVDC1mpzLMqnpCFAfj4YuO00Y9tEJQot3jE1_BaaxOgOHjmdIZc4
-   xH4h3haLZ2E6EJvo3XFel1QubYmVgSPLtaVJKWJUIdx8zdl2t4c8xPpkvmHrYuZWlzZP9
-   Ht_Zi71qCMfbjDEDmAoB_4AvJXIYXk1eD8tKj32Hd03pDzP7RkO63ddny-nqcCdheT1t7
-   TFxflVI170-8D9Mmz9pB1i5Ze0qBhYv0OvY5c854hbatY79PCNe8IpUb2Y8J3tso301A9
-   1j7m7UD7nAANrYqCAlnmBJUruRncSIu1hhTJ_5Gk6T5JAFNheyISF8CqjbNw_4iTotmOV
-   oyS-BZLcWui6SVQoTXA598sr2zzQZyfqGOEehbsUbPGcw
+   MA~MTcxNzE5OTk5OQ~IkRvZSI~IkpheSI~~~.r9WkkBSsS6h_pEvLCVbWcQi7RV7P22WW
+   rtsjYDB3Tz2yHuXJs2uDr94jypdsZjgaiP5WN6O6fR9KST4qrE3jsv8nlaO5BN-7GmBbV
+   ly6CIzVJGBQ2g_r8ZbSxqHBuBI7laZCpkTgMfYnJO4yu6H8vAtCDzeseII9RonN-qUCI6
+   Z4pOYx9qDEvGR92KL6vuvoGWnLMqx-JVAzzCANsgCrAvr7SNV2PqXi-atB9GIPxT0R9kv
+   jKfzXAerjEoYqXjcL0C7Du1nexEeSq26nUCuVZyrEtinoBgmRwVHxX65z2MSTQEFkYXSz
+   ngO6QKj_WkwWJOlMxmjkDo_EN4zKjXvpWBQe-SS1LtoVsW15IluLnT0wypwYo1cTY6gnt
+   -To71in9Q71m05GLW7MQLKaah7bZgN1Bw5UExyB1Bl0qNR2jRFXmT-UFuyca4z1jkrbnP
+   xLBi8a0jx1C-J25QUsAefB_Q2hO-uZJ5mX0anrfo32ig8
 
    |  Figure: Compact Serialization of Presentation
 
@@ -701,14 +701,14 @@ Table of Contents
        null
      ],
      "proof": [
-       "pwSke-ljeJd7zqSzTU70WIQohnB2aKWUUkXoHyN87opfnUX9ah8viOKvjUuhF7-n
-          iJygy2PJ78gVJtOLfm3cE3tEonGJSp2-_ji6W30jpaRTl5WJhnoIbieVDC1mpz
-          LMqnpCFAfj4YuO00Y9tEJQot3jE1_BaaxOgOHjmdIZc4xH4h3haLZ2E6EJvo3X
-          Fel1QubYmVgSPLtaVJKWJUIdx8zdl2t4c8xPpkvmHrYuZWlzZP9Ht_Zi71qCMf
-          bjDEDmAoB_4AvJXIYXk1eD8tKj32Hd03pDzP7RkO63ddny-nqcCdheT1t7TFxf
-          lVI170-8D9Mmz9pB1i5Ze0qBhYv0OvY5c854hbatY79PCNe8IpUb2Y8J3tso30
-          1A91j7m7UD7nAANrYqCAlnmBJUruRncSIu1hhTJ_5Gk6T5JAFNheyISF8CqjbN
-          w_4iTotmOVoyS-BZLcWui6SVQoTXA598sr2zzQZyfqGOEehbsUbPGcw"
+       "r9WkkBSsS6h_pEvLCVbWcQi7RV7P22WWrtsjYDB3Tz2yHuXJs2uDr94jypdsZjga
+          iP5WN6O6fR9KST4qrE3jsv8nlaO5BN-7GmBbVly6CIzVJGBQ2g_r8ZbSxqHBuB
+          I7laZCpkTgMfYnJO4yu6H8vAtCDzeseII9RonN-qUCI6Z4pOYx9qDEvGR92KL6
+          vuvoGWnLMqx-JVAzzCANsgCrAvr7SNV2PqXi-atB9GIPxT0R9kvjKfzXAerjEo
+          YqXjcL0C7Du1nexEeSq26nUCuVZyrEtinoBgmRwVHxX65z2MSTQEFkYXSzngO6
+          QKj_WkwWJOlMxmjkDo_EN4zKjXvpWBQe-SS1LtoVsW15IluLnT0wypwYo1cTY6
+          gnt-To71in9Q71m05GLW7MQLKaah7bZgN1Bw5UExyB1Bl0qNR2jRFXmT-UFuyc
+          a4z1jkrbnPxLBi8a0jx1C-J25QUsAefB_Q2hO-uZJ5mX0anrfo32ig8"
      ]
    }
 
@@ -727,9 +727,10 @@ Table of Contents
 
    The cty (content type) JWE Header Parameter is used to indicate that
    the content of the JWE is a JWP.  The cty value of the JWE SHOULD be
-   the same as the typ (type) JWP Header Parameter value of the JWP.  If
-   the JWP has no typ value, then the following JWE Header Parameter cty
-   (content type) values SHOULD be used:
+   the same as the typ (type) JWP Header Parameter value of the
+   unencrypted JWP to be encrypted.  If the JWP has no typ value, then
+   the following JWE Header Parameter cty (content type) values SHOULD
+   be used:
 
    *  jwp is used to indicate that the content of the JWE is a JWP using
       the JWP Compact Serialization.
