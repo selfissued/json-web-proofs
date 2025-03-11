@@ -2,13 +2,12 @@
 
 
 
-jose                                                           J. Miller
-Internet-Draft                                             Ping Identity
-Intended status: Standards Track                                M. Jones
-Expires: 3 February 2025                          Self-Issued Consulting
-                                                                D. Waite
+jose                                                            M. Jones
+Internet-Draft                                    Self-Issued Consulting
+Intended status: Standards Track                                D. Waite
+Expires: 12 September 2025                                     J. Miller
                                                            Ping Identity
-                                                           2 August 2024
+                                                           11 March 2025
 
 
                          JSON Proof Algorithms
@@ -17,9 +16,9 @@ Expires: 3 February 2025                          Self-Issued Consulting
 Abstract
 
    The JSON Proof Algorithms (JPA) specification registers cryptographic
-   algorithms and identifiers to be used with the JSON Web Proof and
-   JSON Web Key (JWK) specifications.  It defines IANA registries for
-   these identifiers.
+   algorithms and identifiers to be used with the JSON Web Proof, JSON
+   Web Key (JWK), and COSE specifications.  It defines IANA registries
+   for these identifiers.
 
 Status of This Memo
 
@@ -36,11 +35,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 February 2025.
+   This Internet-Draft will expire on 12 September 2025.
 
 Copyright Notice
 
-   Copyright (c) 2024 IETF Trust and the persons identified as the
+   Copyright (c) 2025 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -86,22 +85,27 @@ Table of Contents
      6.3.  Message Authentication Code
        6.3.1.  Holder Setup
        6.3.2.  Issuer Setup
-       6.3.3.  Issuer Protected Header
-       6.3.4.  Combined MAC Representation
-       6.3.5.  Issuer Proof
-       6.3.6.  Presentation Protected Header
-       6.3.7.  Presentation Proof
-       6.3.8.  Verification of the Presentation Proof
-       6.3.9.  JPA Registration
+       6.3.3.  Combined MAC Representation
+       6.3.4.  Issuer Proof
+       6.3.5.  Presentation Protected Header
+       6.3.6.  Presentation Proof
+       6.3.7.  Verification of the Presentation Proof
+       6.3.8.  JPA Registration
    7.  Security Considerations
    8.  IANA Considerations
      8.1.  JSON Web Proof Algorithms Registry
        8.1.1.  Registration Template
        8.1.2.  Initial Registry Contents
-     8.2.  JSON Web Proof Header Parameters Registration
-       8.2.1.  Registry Contents
-         8.2.1.1.  Proof JWK Header Parameter
-         8.2.1.2.  Presentation JWK Header Parameter
+         8.1.2.1.  Single-Use JWP using ES256 Algorithm
+         8.1.2.2.  Single-Use JWP using ES384 Algorithm
+         8.1.2.3.  Single-Use JWP using ES512 Algorithm
+         8.1.2.4.  BBS using SHA-256 Algorithm
+         8.1.2.5.  MAC-H256 Algorithm
+         8.1.2.6.  MAC-H384 Algorithm
+         8.1.2.7.  MAC-H512 Algorithm
+         8.1.2.8.  MAC-K25519 Algorithm
+         8.1.2.9.  MAC-K448 Algorithm
+         8.1.2.10. MAC-H256K Algorithm
    9.  References
      9.1.  Normative References
      9.2.  Informative References
@@ -302,12 +306,11 @@ Table of Contents
 
 6.1.5.  Issuer Protected Header
 
-   The JWK of the issuer's Ephemeral Key MUST be included in the issuer
-   protected header with the property name of proof_jwk and contain only
-   the REQUIRED values to represent the public key.
+   The issuer's Ephemeral Key MUST be included in the issuer protected
+   header via the Proof Key header parameter.
 
-   The holder's Presentation Key JWK MUST be included in issuer
-   protected header using the presentation_jwk parameter.
+   The holder's Presentation Key MUST be included in issuer protected
+   header via the Presentation Key header parameter.
 
    The issuer protected header is signed using the given JWA and the
    issuer's Stable Key.
@@ -342,9 +345,6 @@ Table of Contents
    presentation header parameters SHOULD NOT contain values that are
    common across multiple presentations and SHOULD be unique to a single
    presentation and verifier.
-
-   In various examples in this specification, the octet string
-   serialized presentation header is referenced as presentation_header.
 
 6.1.9.  Presentation
 
@@ -386,12 +386,10 @@ Table of Contents
    the first part in the proof using the issuer's Stable Key. It MUST
    also verify the presentation protected header octets against the
    second part in the proof value using the holder's Presentation Key,
-   as provided in the presentation_jwk claim in the issuer protected
-   header.
+   as provided in the Presentation Key header parameter.
 
-   With the headers verified, the issuer's Ephemeral Key as given in the
-   issuer protected header proof_jwk parameter can then be used to
-   verify each of the disclosed payload signatures.
+   With the headers verified, the Proof Key header parameter can then be
+   used to verify each of the disclosed payload signatures.
 
 6.1.11.  JPA Registration
 
@@ -411,27 +409,19 @@ Table of Contents
 
 6.2.1.  JPA Algorithms
 
-   The BBS alg parameter value in the issuance protected header
-   corresponds to a ciphersuite identifier of BBS_BLS12381G1_XMD:SHA-
-   256_SSWU_RO_.
-
-   The BBS-PROOF alg parameter value in the presentation protected
-   header corresponds to the same ciphersuite, but used in presentation
-   form.
+   The BBS algorithm corresponds to a ciphersuite identifier of
+   BBS_BLS12381G1_XMD:SHA-256_SSWU_RO_.
 
 6.2.2.  Key Format
 
    The key used for the BBS algorithm is an elliptic curve-based key
    pair, specifically against the G_2 subgroup of a pairing friendly
    curve.  Additional details on key generation can be found in
-   Section 3.4
+   Section 3.4.  The JWK and Cose Key Object representations of the key
+   are detailed in [I-D.ietf-cose-bls-key-representations].
 
-   The JWK form of this key is an OKP type with a curve of BLS12381G2,
-   with x being the base64url-encoded form of the output of
-   point_to_octets_E2.  The use of this curve is described in
-   [I-D.ietf-cose-bls-key-representations].
-
-   There is no additional holder key necessary for presentation proofs.
+   There is no additional holder presentation key necessary for
+   presentation proofs.
 
 6.2.3.  Issuance
 
@@ -517,21 +507,11 @@ Table of Contents
 
 6.3.1.  Holder Setup
 
-   Prior to the issuer creating a new JWP, it must have presentation
-   binding information provided by the holder.  This enables the holder
-   to perform replay prevention while presenting the JWP.
+   Prior to the issuer creating a new JWP, the issuer MUST have a
+   presentation public key provided by the holder.
 
-   The presentation key used by the holder must be transferred to the
-   issuer and verified, likely through a challenge and self-signing
-   mechanism.  If the holder requires unlinkability, it must also
-   generate a new key that is verified and bound to each new JWP.
-
-   How these holder presentation keys are transferred and verified is
-   out of scope of this specification.  Protocols such as OpenID Connect
-   can be used to accomplish this.  What is required by this definition
-   is that the holder's presentation key MUST be included in the
-   issuer's protected header using the pjwk parameter with a JWK as the
-   value.
+   The holder's presentation key MUST be included in the issuer's
+   protected header using the Presentation Key header parameter.
 
 6.3.2.  Issuer Setup
 
@@ -546,15 +526,7 @@ Table of Contents
    keys are then used as the input to generate a MAC that protects each
    payload.
 
-6.3.3.  Issuer Protected Header
-
-   The holder's presentation key JWK MUST be included in the issuer
-   protected header using the pjwk parameter.  The issuer MUST validate
-   that the holder has possession of this key through a trusted
-   mechanism such as verifying the signature of a unique nonce value
-   from the holder.
-
-6.3.4.  Combined MAC Representation
+6.3.3.  Combined MAC Representation
 
    The combined MAC representation is a single octet string representing
    the MAC values of the issuer protected header, along with each
@@ -579,7 +551,7 @@ Table of Contents
    concatentation of the issuer protected header MAC output, along with
    each payload MAC output.
 
-6.3.5.  Issuer Proof
+6.3.4.  Issuer Proof
 
    The issuer proof consists of two octet strings.
 
@@ -596,20 +568,20 @@ Table of Contents
    The second octet string is the Shared Secret used to generate the
    per-payload keys for the combined representation.
 
-6.3.6.  Presentation Protected Header
+6.3.5.  Presentation Protected Header
 
    See the JWS Presentation Protected Header (#presentation-protected-
    header) section.
 
-6.3.7.  Presentation Proof
+6.3.6.  Presentation Proof
 
    |  Editor's Note: The current definition here is incomplete, the
    |  holder's signature needs to also incorporate the presented proof.
 
    The first value in the presentation proof is the presentation
    signature.  This is a signature over the presentation protected
-   header, using the key specified by the pjwk parameter in the issuer
-   protected header.
+   header, using the key specified by the Presentation Key header
+   parameter in the issuer protected header.
 
    The second value is the issuer signature over the Combined MAC
    Representation provided with the issued form.
@@ -625,7 +597,7 @@ Table of Contents
    If a payload is not disclosed, the payload's MAC in the combined MAC
    representation is used as the payload's entry in the proof array.
 
-6.3.8.  Verification of the Presentation Proof
+6.3.7.  Verification of the Presentation Proof
 
    The verifier must recreate the Combined MAC Representation from the
    presentation proof to verify integrity over the disclosed
@@ -649,7 +621,7 @@ Table of Contents
    issuer signature in the proof is then verified by converting these
    values to a JWS as described above, and verifying that JWS.
 
-6.3.9.  JPA Registration
+6.3.8.  JPA Registration
 
    Proposed JWP alg value is of the format "MAC-" appended with a unique
    identifier for the set of MAC and signing algorithms used.  Below are
@@ -751,36 +723,44 @@ Table of Contents
 
 8.1.1.  Registration Template
 
-   *  Algorithm Name: The name requested (e.g., "SU-ES256").  This name
-      is a case-sensitive ASCII string.  Names may not match other
-      registered names in a case-insensitive manner unless the
-      Designated Experts state that there is a compelling reason to
+   Algorithm Name:  Brief descriptive name of the algorithm (e.g.,
+      Single-Use JWP using ES256.)  Descriptive names may not match
+      other registered names unless the Designated Experts state that
+      there is a compelling reason to allow an exception.
+   Algorithm JSON Label:  The string label requested (e.g., SU-ES256).
+      This label is a case-sensitive ASCII string.  JSON Labels may not
+      match other registered labels in a case-insensitive manner unless
+      the Designated Experts state that there is a compelling reason to
       allow an exception.
-   *  Algorithm Description: Brief description of the algorithm (e.g.,
-      "Single-Use JWP using ES256").
-   *  Algorithm Usage Location(s): The algorithm usage locations, which
+   Algorithm CBOR Label:  The integer label requested (e.g. 1).  CBOR
+      Labels may not match other registered labels unless the Designated
+      Experts state that there is a compelling reason to allow an
+      exception.
+   Algorithm Description:  Optional additional information clarifying
+      the algorithm.  This may be used for example to document
+      additional chosen parameters.
+   Algorithm Usage Location(s):  The algorithm usage locations, which
       should be one or more of the values Issued or Presented.  Other
       values may be used with the approval of a Designated Expert.
-   *  JWP Implementation Requirements: The algorithm implementation
+   JWP Implementation Requirements:  The algorithm implementation
       requirements for JWP, which must be one the words Required,
       Recommended, Optional, Deprecated, or Prohibited.  Optionally, the
-      word can be followed by a "+" or "-".  The use of "+" indicates
-      that the requirement strength is likely to be increased in a
-      future version of the specification.  The use of "-" indicates
-      that the requirement strength is likely to be decreased in a
-      future version of the specification.  Any identifiers registered
-      for non-authenticated encryption algorithms or other algorithms
-      that are otherwise unsuitable for direct use as JWP algorithms
-      must be registered as "Prohibited".
-   *  Change Controller: For Standards Track RFCs, list the "IETF".  For
+      word can be followed by a + or -. The use of + indicates that the
+      requirement strength is likely to be increased in a future version
+      of the specification.  The use of - indicates that the requirement
+      strength is likely to be decreased in a future version of the
+      specification.  Any identifiers registered for algorithms that are
+      otherwise unsuitable for direct use as JWP algorithms must be
+      registered as Prohibited.
+   Change Controller:  For Standards Track RFCs, list the "IETF".  For
       others, give the name of the responsible party.  Other details
       (e.g., postal address, email address, home page URI) may also be
       included.
-   *  Specification Document(s): Reference to the document or documents
+   Specification Document(s):  Reference to the document or documents
       that specify the parameter, preferably including URIs that can be
       used to retrieve copies of the documents.  An indication of the
       relevant sections may also be included but is not required.
-   *  Algorithm Analysis Documents(s): References to a publication or
+   Algorithm Analysis Documents(s):  References to a publication or
       publications in well-known cryptographic conferences, by national
       standards bodies, or by other authoritative sources analyzing the
       cryptographic soundness of the algorithm to be registered.  The
@@ -793,219 +773,157 @@ Table of Contents
 
 8.1.2.  Initial Registry Contents
 
-   *  Algorithm Name: SU-ES256
+8.1.2.1.  Single-Use JWP using ES256 Algorithm
 
-   *  Algorithm Description: Single-Use JWP using ES256
-
+   *  Algorithm Name: Single-Use JWP using ES256
+   *  Algorithm JSON Label: SU-ES256
+   *  Algorithm CBOR Label: 1
    *  Algorithm Usage Location(s): Issued, Presented
-
    *  JWP Implementation Requirements: Recommended
-
    *  Change Controller: IETF
-
    *  Specification Document(s): Section 6.1.11 of this specification
-
    *  Algorithm Analysis Documents(s): n/a
 
-   *  Algorithm Name: SU-ES384
+8.1.2.2.  Single-Use JWP using ES384 Algorithm
 
-   *  Algorithm Description: Single-Use JWP using ES384
-
+   *  Algorithm Name: Single-Use JWP using ES384
+   *  Algorithm JSON Label: SU-ES384
+   *  Algorithm CBOR Label: 2
    *  Algorithm Usage Location(s): Issued, Presented
-
    *  JWP Implementation Requirements: Optional
-
    *  Change Controller: IETF
-
    *  Specification Document(s): Section 6.1.11 of this specification
-
    *  Algorithm Analysis Documents(s): n/a
 
-   *  Algorithm Name: SU-ES512
+8.1.2.3.  Single-Use JWP using ES512 Algorithm
 
-   *  Algorithm Description: Single-Use JWP using ES512
-
+   *  Algorithm Name: Single-Use JWP using ES512
+   *  Algorithm JSON Label: SU-ES512
+   *  Algorithm CBOR Label: 3
    *  Algorithm Usage Location(s): Issued, Presented
-
    *  JWP Implementation Requirements: Optional
-
    *  Change Controller: IETF
-
    *  Specification Document(s): Section 6.1.11 of this specification
-
    *  Algorithm Analysis Documents(s): n/a
 
-   *  Algorithm Name: BBS
+8.1.2.4.  BBS using SHA-256 Algorithm
 
+   *  Algorithm Name: BBS using SHA-256
+   *  Algorithm JSON Label: BBS
+   *  Algorithm CBOR Label: 4
    *  Algorithm Description: Corresponds to a ciphersuite identifier of
       BBS_BLS12381G1_XMD:SHA-256_SSWU_RO_H2G_HM2S_
-
-   *  Algorithm Usage Location(s): Issued
-
+   *  Algorithm Usage Location(s): Issued, Presented
    *  JWP Implementation Requirements: Required
-
    *  Change Controller: IETF
-
    *  Specification Document(s): Section 6.2.1 of this specification
-
    *  Algorithm Analysis Documents(s): n/a
 
-   *  Algorithm Name: BBS-PROOF
-
-   *  Algorithm Description: Corresponds to a ciphersuite identifier of
-      BBS_BLS12381G1_XMD:SHA-256_SSWU_RO_H2G_HM2S_
-
-   *  Algorithm Usage Location(s): Presented
-
-   *  JWP Implementation Requirements: Required
-
-   *  Change Controller: IETF
-
-   *  Specification Document(s): Section 6.2.1 of this specification
-
-   *  Algorithm Analysis Documents(s): n/a
+8.1.2.5.  MAC-H256 Algorithm
 
    *  Algorithm Name: MAC-H256
-
-   *  Algorithm Description: MAC-H256 uses HMAC SHA-256 as the MAC and
+   *  Algorithm JSON Label: MAC-H256
+   *  Algorithm CBOR Label: 5
+   *  Algorithm Description: MAC-H256 uses HMAC SHA-256 as the MAC, and
       ECDSA using P-256 and SHA-256 for the signatures
-
    *  Algorithm Usage Location(s): Issued, Presented
-
    *  JWP Implementation Requirements: Optional
-
    *  Change Controller: IETF
-
-   *  Specification Document(s): Section 6.3.9 of this specification
-
+   *  Specification Document(s): Section 6.3.8 of this specification
    *  Algorithm Analysis Documents(s): n/a
+
+8.1.2.6.  MAC-H384 Algorithm
 
    *  Algorithm Name: MAC-H384
-
-   *  Algorithm Description: MAC-H384 uses HMAC SHA-384 as the MAC and
+   *  Algorithm JSON Label: MAC-H384
+   *  Algorithm CBOR Label: 6
+   *  Algorithm Description: MAC-H384 uses HMAC SHA-384 as the MAC, and
       ECDSA using P-384 and SHA-384 for the signatures
-
    *  Algorithm Usage Location(s): Issued, Presented
-
    *  JWP Implementation Requirements: Optional
-
    *  Change Controller: IETF
-
-   *  Specification Document(s): Section 6.3.9 of this specification
-
+   *  Specification Document(s): Section 6.3.8 of this specification
    *  Algorithm Analysis Documents(s): n/a
+
+8.1.2.7.  MAC-H512 Algorithm
 
    *  Algorithm Name: MAC-H512
-
-   *  Algorithm Description: MAC-H512 uses HMAC SHA-512 as the MAC and
+   *  Algorithm JSON Label: MAC-H512
+   *  Algorithm CBOR Label: 7
+   *  Algorithm Description: MAC-H512 uses HMAC SHA-512 as the MAC, and
       ECDSA using P-521 and SHA-512 for the signatures
-
    *  Algorithm Usage Location(s): Issued, Presented
-
    *  JWP Implementation Requirements: Optional
-
    *  Change Controller: IETF
-
-   *  Specification Document(s): Section 6.3.9 of this specification
-
+   *  Specification Document(s): Section 6.3.8 of this specification
    *  Algorithm Analysis Documents(s): n/a
+
+8.1.2.8.  MAC-K25519 Algorithm
 
    *  Algorithm Name: MAC-K25519
-
-   *  Algorithm Description: MAC-K25519 uses KMAC SHAKE128 as the MAC
+   *  Algorithm JSON Label: MAC-K25519
+   *  Algorithm CBOR Label: 8
+   *  Algorithm Description: MAC-K25519 uses KMAC SHAKE128 as the MAC,
       and EdDSA using Curve25519 for the signatures
-
    *  Algorithm Usage Location(s): Issued, Presented
-
    *  JWP Implementation Requirements: Optional
-
    *  Change Controller: IETF
-
-   *  Specification Document(s): Section 6.3.9 of this specification
-
+   *  Specification Document(s): Section 6.3.8 of this specification
    *  Algorithm Analysis Documents(s): n/a
+
+8.1.2.9.  MAC-K448 Algorithm
 
    *  Algorithm Name: MAC-K448
-
-   *  Algorithm Description: MAC-K448 uses KMAC SHAKE256 as the MAC and
+   *  Algorithm JSON Label: MAC-K448
+   *  Algorithm CBOR Label: 9
+   *  Algorithm Description: MAC-K448 uses KMAC SHAKE256 as the MAC, and
       EdDSA using Curve448 for the signatures
-
    *  Algorithm Usage Location(s): Issued, Presented
-
    *  JWP Implementation Requirements: Optional
-
    *  Change Controller: IETF
-
-   *  Specification Document(s): Section 6.3.9 of this specification
-
+   *  Specification Document(s): Section 6.3.8 of this specification
    *  Algorithm Analysis Documents(s): n/a
+
+8.1.2.10.  MAC-H256K Algorithm
 
    *  Algorithm Name: MAC-H256K
-
-   *  Algorithm Description: MAC-H256K uses HMAC SHA-256 as the MAC and
+   *  Algorithm JSON Label: MAC-H256K
+   *  Algorithm CBOR Label: 10
+   *  Algorithm Description: MAC-H256K uses HMAC SHA-256 as the MAC, and
       ECDSA using secp256k1 and SHA-256 for the signatures
-
    *  Algorithm Usage Location(s): Issued, Presented
-
    *  JWP Implementation Requirements: Optional
-
    *  Change Controller: IETF
-
-   *  Specification Document(s): Section 6.3.9 of this specification
-
+   *  Specification Document(s): Section 6.3.8 of this specification
    *  Algorithm Analysis Documents(s): n/a
-
-8.2.  JSON Web Proof Header Parameters Registration
-
-   This section registers the following JWP Header Parameters in the
-   IANA "JSON Web Proof Header Parameters" registry established by
-   [I-D.ietf-jose-json-web-proof].
-
-8.2.1.  Registry Contents
-
-8.2.1.1.  Proof JWK Header Parameter
-
-   *  Header Parameter Name: proof_jwk
-   *  Header Parameter Description: Issuer's Ephemeral Key
-   *  Header Parameter Usage Location(s): Issued
-   *  Change Controller: IETF
-   *  Specification Document(s): Section 6.1.5 of this specification
-
-8.2.1.2.  Presentation JWK Header Parameter
-
-   *  Header Parameter Name: presentation_jwk
-   *  Header Parameter Description: Holder's Presentation Key
-   *  Header Parameter Usage Location(s): Issued
-   *  Change Controller: IETF
-   *  Specification Document(s): Section 6.1.5 of this specification
 
 9.  References
 
 9.1.  Normative References
 
-   [I-D.ietf-cose-bls-key-representations]
-              Looker, T. and M. B. Jones, "Barreto-Lynn-Scott Elliptic
-              Curve Key Representations for JOSE and COSE", Work in
-              Progress, Internet-Draft, draft-ietf-cose-bls-key-
-              representations-05, 17 March 2024,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-cose-
-              bls-key-representations-05>.
-
    [I-D.ietf-jose-json-web-proof]
-              Miller, J., Waite, D., and M. B. Jones, "JSON Web Proof",
+              Waite, D., Jones, M. B., and J. Miller, "JSON Web Proof",
               Work in Progress, Internet-Draft, draft-ietf-jose-json-
-              web-proof-05, 22 July 2024,
+              web-proof-07, 21 October 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-jose-
-              json-web-proof-05>.
+              json-web-proof-07>.
 
    [I-D.irtf-cfrg-bbs-signatures]
               Looker, T., Kalos, V., Whitehead, A., and M. Lodder, "The
               BBS Signature Scheme", Work in Progress, Internet-Draft,
-              draft-irtf-cfrg-bbs-signatures-06, 26 June 2024,
-              <https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-
-              bbs-signatures-06>.
+              draft-irtf-cfrg-bbs-signatures-08, 3 March 2025,
+              <https://datatracker.ietf.org/api/v1/doc/document/draft-
+              irtf-cfrg-bbs-signatures/>.
 
 9.2.  Informative References
+
+   [I-D.ietf-cose-bls-key-representations]
+              Looker, T. and M. B. Jones, "Barreto-Lynn-Scott Elliptic
+              Curve Key Representations for JOSE and COSE", Work in
+              Progress, Internet-Draft, draft-ietf-cose-bls-key-
+              representations-06, 18 January 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-cose-
+              bls-key-representations-06>.
 
    [RFC2104]  Krawczyk, H., Bellare, M., and R. Canetti, "HMAC: Keyed-
               Hashing for Message Authentication", RFC 2104,
@@ -1064,9 +982,9 @@ A.1.  Example Single-Use JWP
    {
      "kty": "EC",
      "crv": "P-256",
-     "x": "kqXaVLqd7oE8o6XI1tjoQRBQJdp1BnVUhS1XPY_m-dc",
-     "y": "6RzZPzdMQrqapjoes51PnEUeeb0MQfXrh4jlchbWPUk",
-     "d": "NqXeHnCsObT9adsblbgWCS-HGphzpCEDdWQDoE4hI7A"
+     "x": "hipI3sXkSikJSpg8KCVWYvJ8HTQjL4YmPW5pd7emZQY",
+     "y": "uW7F8k6ANH36LQGtxf0lk4hKzHKX_pgy6bRS3gYHB2Q",
+     "d": "PHXDLls6R62oB3Il-TB42xgTcig6DKW5lCrvDZmeqsY"
    }
 
                     Figure 1: Issuer Private Key (es256)
@@ -1077,9 +995,9 @@ A.1.  Example Single-Use JWP
    {
      "kty": "EC",
      "crv": "P-256",
-     "x": "OYBsSoq5lC5Y7mfNEw4BTlIDuAc7G937yag_4zACV-k",
-     "y": "fl61y-3Irsn6-XbSEyLEEooyjzcUGNjrZN2K0ZlL5R0",
-     "d": "OisMz8dPj2HU3MJ0QUYLDLdV51Cs4KQoHZqGvmYMUCo"
+     "x": "A80weOakZOBDChG9iHTG7MpBsygwu5WfEmRXp5rZB9Q",
+     "y": "xfmr_k3wf18mzLKvFScMKqvxHS4JGd50m-KUQJsr6PY",
+     "d": "RtSZTnzb1VjTjrWL0LqXd1pUc4ujHn1AG9lN3DgQ3R8"
    }
 
                Figure 2: Issuer Ephemeral Private Key (es256)
@@ -1090,9 +1008,9 @@ A.1.  Example Single-Use JWP
    {
      "kty": "EC",
      "crv": "P-256",
-     "x": "3yc5jo9aea6wUu9pxViZoxuyyImtbNoyDYXl_bWJY5M",
-     "y": "QC4QQn0EcuzPojPnkDes4vl9hipfog17nQ2O0W0B1zU",
-     "d": "SXrLLXtOTqqBhAP8-OTqouxbXAUqP14GvEjwTa654rY"
+     "x": "7rnAROx-cbtC1TBVDAv5OMrkM6psR95hFPFXbNiYE4c",
+     "y": "wDgUU3rG5KVQskxPLswc819YRT--l6H4fxBDNZXp4tk",
+     "d": "tHXiaeFSsDvGvLtrwd4nzk3lGOmNVc1uDVF-iz283TU"
    }
 
                  Figure 3: Holder Presentation Private Key
@@ -1116,19 +1034,19 @@ A.1.  Example Single-Use JWP
        "address",
        "age_over_21"
      ],
-     "proof_jwk": {
+     "proof_key": {
        "kty": "EC",
        "crv": "P-256",
-       "x": "OYBsSoq5lC5Y7mfNEw4BTlIDuAc7G937yag_4zACV-k",
-       "y": "fl61y-3Irsn6-XbSEyLEEooyjzcUGNjrZN2K0ZlL5R0",
-       "d": "OisMz8dPj2HU3MJ0QUYLDLdV51Cs4KQoHZqGvmYMUCo"
+       "x": "A80weOakZOBDChG9iHTG7MpBsygwu5WfEmRXp5rZB9Q",
+       "y": "xfmr_k3wf18mzLKvFScMKqvxHS4JGd50m-KUQJsr6PY",
+       "d": "RtSZTnzb1VjTjrWL0LqXd1pUc4ujHn1AG9lN3DgQ3R8"
      },
-     "presentation_jwk": {
+     "presentation_key": {
        "kty": "EC",
        "crv": "P-256",
-       "x": "3yc5jo9aea6wUu9pxViZoxuyyImtbNoyDYXl_bWJY5M",
-       "y": "QC4QQn0EcuzPojPnkDes4vl9hipfog17nQ2O0W0B1zU",
-       "d": "SXrLLXtOTqqBhAP8-OTqouxbXAUqP14GvEjwTa654rY"
+       "x": "7rnAROx-cbtC1TBVDAv5OMrkM6psR95hFPFXbNiYE4c",
+       "y": "wDgUU3rG5KVQskxPLswc819YRT--l6H4fxBDNZXp4tk",
+       "d": "tHXiaeFSsDvGvLtrwd4nzk3lGOmNVc1uDVF-iz283TU"
      }
    }
 
@@ -1140,15 +1058,15 @@ A.1.  Example Single-Use JWP
 
    eyJhbGciOiJTVS1FUzI1NiIsInR5cCI6IkpQVCIsImlzcyI6Imh0dHBzOi8vaXNzdWVyL
    mV4YW1wbGUiLCJjbGFpbXMiOlsiaWF0IiwiZXhwIiwiZmFtaWx5X25hbWUiLCJnaXZlbl
-   9uYW1lIiwiZW1haWwiLCJhZGRyZXNzIiwiYWdlX292ZXJfMjEiXSwicHJvb2ZfandrIjp
-   7Imt0eSI6IkVDIiwiY3J2IjoiUC0yNTYiLCJ4IjoiT1lCc1NvcTVsQzVZN21mTkV3NEJU
-   bElEdUFjN0c5Mzd5YWdfNHpBQ1YtayIsInkiOiJmbDYxeS0zSXJzbjYtWGJTRXlMRUVvb
-   3lqemNVR05qclpOMkswWmxMNVIwIiwiZCI6Ik9pc016OGRQajJIVTNNSjBRVVlMRExkVj
-   UxQ3M0S1FvSFpxR3ZtWU1VQ28ifSwicHJlc2VudGF0aW9uX2p3ayI6eyJrdHkiOiJFQyI
-   sImNydiI6IlAtMjU2IiwieCI6IjN5YzVqbzlhZWE2d1V1OXB4Vmlab3h1eXlJbXRiTm95
-   RFlYbF9iV0pZNU0iLCJ5IjoiUUM0UVFuMEVjdXpQb2pQbmtEZXM0dmw5aGlwZm9nMTduU
-   TJPMFcwQjF6VSIsImQiOiJTWHJMTFh0T1RxcUJoQVA4LU9UcW91eGJYQVVxUDE0R3ZFan
-   dUYTY1NHJZIn19
+   9uYW1lIiwiZW1haWwiLCJhZGRyZXNzIiwiYWdlX292ZXJfMjEiXSwicHJvb2Zfa2V5Ijp
+   7Imt0eSI6IkVDIiwiY3J2IjoiUC0yNTYiLCJ4IjoiQTgwd2VPYWtaT0JEQ2hHOWlIVEc3
+   TXBCc3lnd3U1V2ZFbVJYcDVyWkI5USIsInkiOiJ4Zm1yX2szd2YxOG16TEt2RlNjTUtxd
+   nhIUzRKR2Q1MG0tS1VRSnNyNlBZIiwiZCI6IlJ0U1pUbnpiMVZqVGpyV0wwTHFYZDFwVW
+   M0dWpIbjFBRzlsTjNEZ1EzUjgifSwicHJlc2VudGF0aW9uX2tleSI6eyJrdHkiOiJFQyI
+   sImNydiI6IlAtMjU2IiwieCI6IjdybkFST3gtY2J0QzFUQlZEQXY1T01ya002cHNSOTVo
+   RlBGWGJOaVlFNGMiLCJ5Ijoid0RnVVUzckc1S1ZRc2t4UExzd2M4MTlZUlQtLWw2SDRme
+   EJETlpYcDR0ayIsImQiOiJ0SFhpYWVGU3NEdkd2THRyd2Q0bnprM2xHT21OVmMxdURWRi
+   1pejI4M1RVIn19
 
     Figure 5: Encoded Issuer Protected Header (es256, base64url-encoded)
 
@@ -1170,15 +1088,15 @@ A.1.  Example Single-Use JWP
      "issuer": "eyJhbGciOiJTVS1FUzI1NiIsInR5cCI6IkpQVCIsImlzcyI6Imh0dHBz
           Oi8vaXNzdWVyLmV4YW1wbGUiLCJjbGFpbXMiOlsiaWF0IiwiZXhwIiwiZmFtaW
           x5X25hbWUiLCJnaXZlbl9uYW1lIiwiZW1haWwiLCJhZGRyZXNzIiwiYWdlX292
-          ZXJfMjEiXSwicHJvb2ZfandrIjp7Imt0eSI6IkVDIiwiY3J2IjoiUC0yNTYiLC
-          J4IjoiT1lCc1NvcTVsQzVZN21mTkV3NEJUbElEdUFjN0c5Mzd5YWdfNHpBQ1Yt
-          ayIsInkiOiJmbDYxeS0zSXJzbjYtWGJTRXlMRUVvb3lqemNVR05qclpOMkswWm
-          xMNVIwIiwiZCI6Ik9pc016OGRQajJIVTNNSjBRVVlMRExkVjUxQ3M0S1FvSFpx
-          R3ZtWU1VQ28ifSwicHJlc2VudGF0aW9uX2p3ayI6eyJrdHkiOiJFQyIsImNydi
-          I6IlAtMjU2IiwieCI6IjN5YzVqbzlhZWE2d1V1OXB4Vmlab3h1eXlJbXRiTm95
-          RFlYbF9iV0pZNU0iLCJ5IjoiUUM0UVFuMEVjdXpQb2pQbmtEZXM0dmw5aGlwZm
-          9nMTduUTJPMFcwQjF6VSIsImQiOiJTWHJMTFh0T1RxcUJoQVA4LU9UcW91eGJY
-          QVVxUDE0R3ZFandUYTY1NHJZIn19",
+          ZXJfMjEiXSwicHJvb2Zfa2V5Ijp7Imt0eSI6IkVDIiwiY3J2IjoiUC0yNTYiLC
+          J4IjoiQTgwd2VPYWtaT0JEQ2hHOWlIVEc3TXBCc3lnd3U1V2ZFbVJYcDVyWkI5
+          USIsInkiOiJ4Zm1yX2szd2YxOG16TEt2RlNjTUtxdnhIUzRKR2Q1MG0tS1VRSn
+          NyNlBZIiwiZCI6IlJ0U1pUbnpiMVZqVGpyV0wwTHFYZDFwVWM0dWpIbjFBRzls
+          TjNEZ1EzUjgifSwicHJlc2VudGF0aW9uX2tleSI6eyJrdHkiOiJFQyIsImNydi
+          I6IlAtMjU2IiwieCI6IjdybkFST3gtY2J0QzFUQlZEQXY1T01ya002cHNSOTVo
+          RlBGWGJOaVlFNGMiLCJ5Ijoid0RnVVUzckc1S1ZRc2t4UExzd2M4MTlZUlQtLW
+          w2SDRmeEJETlpYcDR0ayIsImQiOiJ0SFhpYWVGU3NEdkd2THRyd2Q0bnprM2xH
+          T21OVmMxdURWRi1pejI4M1RVIn19",
      "payloads": [
        "MTcxNDUyMTYwMA",
        "MTcxNzE5OTk5OQ",
@@ -1192,22 +1110,22 @@ A.1.  Example Single-Use JWP
        "dHJ1ZQ"
      ],
      "proof": [
-       "3mzLzMYfHqDdlYgEVWsxVwHBwijBb3Jw4n7XuYePj4gWIEbFzLT6ZVL5P9Jr7ttD
-          kbAUpscIMy3Z6Ze3lS8Kgw",
-       "s2NvcmmVBr1VnzgOj75c6d4pJ_JZIDzAc1ZDim6dGzJnp85gqgVEr-Ords9Y_Cpo
-          y1KedaRhdQRbIZyD81pzEQ",
-       "xB6PsX5VrzzLHvnoWp0MpbxRqXnVAUxSXudJHRRBI-mznh9j1P5nloi0CkUG5e7Z
-          40ht2tCZmqibZLFQEJhFuQ",
-       "r2NepFMzTGJmbIju1JM8RL5WqP4cXqIfP81GaOjG6EeeCYJYkDWixzyBiBlpWOCA
-          uAVGFl2voX8cyO7MneeFMg",
-       "IFa75n9zaTm0gzbCHIduJxlS0W0CqZqjnjmYYLMNSv8O0dRTEH565MX_vdaJ-u2Z
-          Kax1C8kuEYCZt1DBTKkJKQ",
-       "n_qlHrj1QwtMI-PnsraKOdioZi-qKgZH2p9DZNF2jRDtBHXBnUbsWM7EUgD_5SJa
-          JMhfVUf2IV_bWyS3ezuxMw",
-       "Fy5KuhPIiM_Vb-Ud2BQCC8SVR8r57gTDAKIUZ663RYimMWSe_DiFK2UabuEVqCN4
-          _Lgxyq5BquyANG71FUYidw",
-       "_7ndbBxG6BshCXP6z6MhSReWc9y0Mh4q6aafuBiv3GwF9yE7GOQ_q-hENA92Q0is
-          oH-HNxi39CMVh9DVCPSLqQ"
+       "2cR5WQiJtqZ4r65fqzpNfsFC6pFXPi_SwQ-i4lm4SckO9QxZqR1UgOlYGNoEHkRY
+          nJ4JWLq7fwpTyjleRmUHxQ",
+       "UmBOID3pgwGFFn5aMsAanu2XvGlAok79t0_dnxWsaEEFouJaR3HKBHLbiu-Dbyt7
+          4B5-TC4-JYnTFwZFyl0AWg",
+       "lJfBnhxDJ3pjuQQ0NshWE3z6mIxH8YVlAl9Qf0EFyk5R5azM7ROvYdKDjLhutQCP
+          67uS5ekWVe-oPvcTUd9gcA",
+       "Bc8cd9MigvAY-vGc6B0qo22ufiSV-AwmbGDyVBtrdY5Y35yef2FGIeXz2a291LYp
+          9BEEIcuAat4aSQVA7_3uiQ",
+       "abA-_c2NXPRBNpMr1CplnXZVRUCUuOOdi3_e0VOD5irJhcQm_BnAjIYqM484fatp
+          mvJwzXhsGH4HVBr9wEHTWQ",
+       "bzri08xYmoE2ussBVwqZT8RHhmwu1BzTbTBDxVpP3ge4Bopb5x_pmRe9Ija3LDXA
+          Bu1pvD4MDDePmNUj--C4Kw",
+       "VW5oz3kogkfztP-1BmlkAXQ00prH2SPavGcco95s-dcdph-oxnDeVxoAqXtxpmCD
+          -5d5tdwdPVvAEbZqEu6XPw",
+       "PMe8FNsIKFpj6td_szsV9k4xwTH3FXxTa8fgWw_pAdZXMRiVyLGPVC9t5tLdETtq
+          9gE2Mkoy1y4_qt_HBO1GHA"
      ]
    }
 
@@ -1217,29 +1135,29 @@ A.1.  Example Single-Use JWP
 
    eyJhbGciOiJTVS1FUzI1NiIsInR5cCI6IkpQVCIsImlzcyI6Imh0dHBzOi8vaXNzdWVyL
    mV4YW1wbGUiLCJjbGFpbXMiOlsiaWF0IiwiZXhwIiwiZmFtaWx5X25hbWUiLCJnaXZlbl
-   9uYW1lIiwiZW1haWwiLCJhZGRyZXNzIiwiYWdlX292ZXJfMjEiXSwicHJvb2ZfandrIjp
-   7Imt0eSI6IkVDIiwiY3J2IjoiUC0yNTYiLCJ4IjoiT1lCc1NvcTVsQzVZN21mTkV3NEJU
-   bElEdUFjN0c5Mzd5YWdfNHpBQ1YtayIsInkiOiJmbDYxeS0zSXJzbjYtWGJTRXlMRUVvb
-   3lqemNVR05qclpOMkswWmxMNVIwIiwiZCI6Ik9pc016OGRQajJIVTNNSjBRVVlMRExkVj
-   UxQ3M0S1FvSFpxR3ZtWU1VQ28ifSwicHJlc2VudGF0aW9uX2p3ayI6eyJrdHkiOiJFQyI
-   sImNydiI6IlAtMjU2IiwieCI6IjN5YzVqbzlhZWE2d1V1OXB4Vmlab3h1eXlJbXRiTm95
-   RFlYbF9iV0pZNU0iLCJ5IjoiUUM0UVFuMEVjdXpQb2pQbmtEZXM0dmw5aGlwZm9nMTduU
-   TJPMFcwQjF6VSIsImQiOiJTWHJMTFh0T1RxcUJoQVA4LU9UcW91eGJYQVVxUDE0R3ZFan
-   dUYTY1NHJZIn19.MTcxNDUyMTYwMA~MTcxNzE5OTk5OQ~IkRvZSI~IkpheSI~ImpheWRv
+   9uYW1lIiwiZW1haWwiLCJhZGRyZXNzIiwiYWdlX292ZXJfMjEiXSwicHJvb2Zfa2V5Ijp
+   7Imt0eSI6IkVDIiwiY3J2IjoiUC0yNTYiLCJ4IjoiQTgwd2VPYWtaT0JEQ2hHOWlIVEc3
+   TXBCc3lnd3U1V2ZFbVJYcDVyWkI5USIsInkiOiJ4Zm1yX2szd2YxOG16TEt2RlNjTUtxd
+   nhIUzRKR2Q1MG0tS1VRSnNyNlBZIiwiZCI6IlJ0U1pUbnpiMVZqVGpyV0wwTHFYZDFwVW
+   M0dWpIbjFBRzlsTjNEZ1EzUjgifSwicHJlc2VudGF0aW9uX2tleSI6eyJrdHkiOiJFQyI
+   sImNydiI6IlAtMjU2IiwieCI6IjdybkFST3gtY2J0QzFUQlZEQXY1T01ya002cHNSOTVo
+   RlBGWGJOaVlFNGMiLCJ5Ijoid0RnVVUzckc1S1ZRc2t4UExzd2M4MTlZUlQtLWw2SDRme
+   EJETlpYcDR0ayIsImQiOiJ0SFhpYWVGU3NEdkd2THRyd2Q0bnprM2xHT21OVmMxdURWRi
+   1pejI4M1RVIn19.MTcxNDUyMTYwMA~MTcxNzE5OTk5OQ~IkRvZSI~IkpheSI~ImpheWRv
    ZUBleGFtcGxlLm9yZyI~eyJmb3JtYXR0ZWQiOiIxMjM0IE1haW4gU3QuXG5Bbnl0b3duL
    CBDQSAxMjM0NVxuVVNBIiwic3RyZWV0X2FkZHJlc3MiOiIxMjM0IE1haW4gU3QuIiwibG
    9jYWxpdHkiOiJBbnl0b3duIiwicmVnaW9uIjoiQ0EiLCJwb3N0YWxfY29kZSI6MTIzNDU
-   sImNvdW50cnkiOiJVU0EifQ~dHJ1ZQ.3mzLzMYfHqDdlYgEVWsxVwHBwijBb3Jw4n7XuY
-   ePj4gWIEbFzLT6ZVL5P9Jr7ttDkbAUpscIMy3Z6Ze3lS8Kgw~s2NvcmmVBr1VnzgOj75c
-   6d4pJ_JZIDzAc1ZDim6dGzJnp85gqgVEr-Ords9Y_Cpoy1KedaRhdQRbIZyD81pzEQ~xB
-   6PsX5VrzzLHvnoWp0MpbxRqXnVAUxSXudJHRRBI-mznh9j1P5nloi0CkUG5e7Z40ht2tC
-   ZmqibZLFQEJhFuQ~r2NepFMzTGJmbIju1JM8RL5WqP4cXqIfP81GaOjG6EeeCYJYkDWix
-   zyBiBlpWOCAuAVGFl2voX8cyO7MneeFMg~IFa75n9zaTm0gzbCHIduJxlS0W0CqZqjnjm
-   YYLMNSv8O0dRTEH565MX_vdaJ-u2ZKax1C8kuEYCZt1DBTKkJKQ~n_qlHrj1QwtMI-Pns
-   raKOdioZi-qKgZH2p9DZNF2jRDtBHXBnUbsWM7EUgD_5SJaJMhfVUf2IV_bWyS3ezuxMw
-   ~Fy5KuhPIiM_Vb-Ud2BQCC8SVR8r57gTDAKIUZ663RYimMWSe_DiFK2UabuEVqCN4_Lgx
-   yq5BquyANG71FUYidw~_7ndbBxG6BshCXP6z6MhSReWc9y0Mh4q6aafuBiv3GwF9yE7GO
-   Q_q-hENA92Q0isoH-HNxi39CMVh9DVCPSLqQ
+   sImNvdW50cnkiOiJVU0EifQ~dHJ1ZQ.2cR5WQiJtqZ4r65fqzpNfsFC6pFXPi_SwQ-i4l
+   m4SckO9QxZqR1UgOlYGNoEHkRYnJ4JWLq7fwpTyjleRmUHxQ~UmBOID3pgwGFFn5aMsAa
+   nu2XvGlAok79t0_dnxWsaEEFouJaR3HKBHLbiu-Dbyt74B5-TC4-JYnTFwZFyl0AWg~lJ
+   fBnhxDJ3pjuQQ0NshWE3z6mIxH8YVlAl9Qf0EFyk5R5azM7ROvYdKDjLhutQCP67uS5ek
+   WVe-oPvcTUd9gcA~Bc8cd9MigvAY-vGc6B0qo22ufiSV-AwmbGDyVBtrdY5Y35yef2FGI
+   eXz2a291LYp9BEEIcuAat4aSQVA7_3uiQ~abA-_c2NXPRBNpMr1CplnXZVRUCUuOOdi3_
+   e0VOD5irJhcQm_BnAjIYqM484fatpmvJwzXhsGH4HVBr9wEHTWQ~bzri08xYmoE2ussBV
+   wqZT8RHhmwu1BzTbTBDxVpP3ge4Bopb5x_pmRe9Ija3LDXABu1pvD4MDDePmNUj--C4Kw
+   ~VW5oz3kogkfztP-1BmlkAXQ00prH2SPavGcco95s-dcdph-oxnDeVxoAqXtxpmCD-5d5
+   tdwdPVvAEbZqEu6XPw~PMe8FNsIKFpj6td_szsV9k4xwTH3FXxTa8fgWw_pAdZXMRiVyL
+   GPVC9t5tLdETtq9gE2Mkoy1y4_qt_HBO1GHA
 
            Figure 7: Issued JWP in Compact Serialization (es256)
 
@@ -1249,7 +1167,7 @@ A.1.  Example Single-Use JWP
    {
      "alg": "SU-ES256",
      "aud": "https://recipient.example.com",
-     "nonce": "Jtx9fKwGfS_vIOJseMVNoddmXYJlSAFe-WRX657LxLg"
+     "nonce": "Y-Qg2FGLFLx9NDy7bjdpvoKD5cPxMKAKd5nTgeqdjGs"
    }
 
                        Figure 8: Presentation Header
@@ -1258,16 +1176,16 @@ A.1.  Example Single-Use JWP
    an octet string.  This gives:
 
    eyJhbGciOiJTVS1FUzI1NiIsImF1ZCI6Imh0dHBzOi8vcmVjaXBpZW50LmV4YW1wbGUuY
-   29tIiwibm9uY2UiOiJKdHg5Zkt3R2ZTX3ZJT0pzZU1WTm9kZG1YWUpsU0FGZS1XUlg2NT
-   dMeExnIn0
+   29tIiwibm9uY2UiOiJZLVFnMkZHTEZMeDlORHk3YmpkcHZvS0Q1Y1B4TUtBS2Q1blRnZX
+   FkakdzIn0
 
              Figure 9: Presentation Header (base64url-encoded)
 
    When signed with the holder's presentation key, the resulting
    signature are:
 
-   do0cG7X-lcX2V9TIqCZYSxxi2ACHwwEg52S-WbbkJuWtdVtPB7kbKw-EfXmCpLmbFgJRw
-   aMAfAMHbdHMD3uZeg
+   mWZYEJQgB1a86hgq4BLqQsA247OkotK1pivXnDkJ9nZ4TE-qLbwTahW7gAyv2aTjHV2-x
+   7nBLL0jh_2trlMrhg
 
    |  Figure: Holder Proof-of-Possession (base64url-encoded)
 
@@ -1277,20 +1195,20 @@ A.1.  Example Single-Use JWP
 
    {
      "presentation": "eyJhbGciOiJTVS1FUzI1NiIsImF1ZCI6Imh0dHBzOi8vcmVjaX
-          BpZW50LmV4YW1wbGUuY29tIiwibm9uY2UiOiJKdHg5Zkt3R2ZTX3ZJT0pzZU1W
-          Tm9kZG1YWUpsU0FGZS1XUlg2NTdMeExnIn0",
+          BpZW50LmV4YW1wbGUuY29tIiwibm9uY2UiOiJZLVFnMkZHTEZMeDlORHk3Ympk
+          cHZvS0Q1Y1B4TUtBS2Q1blRnZXFkakdzIn0",
      "issuer": "eyJhbGciOiJTVS1FUzI1NiIsInR5cCI6IkpQVCIsImlzcyI6Imh0dHBz
           Oi8vaXNzdWVyLmV4YW1wbGUiLCJjbGFpbXMiOlsiaWF0IiwiZXhwIiwiZmFtaW
           x5X25hbWUiLCJnaXZlbl9uYW1lIiwiZW1haWwiLCJhZGRyZXNzIiwiYWdlX292
-          ZXJfMjEiXSwicHJvb2ZfandrIjp7Imt0eSI6IkVDIiwiY3J2IjoiUC0yNTYiLC
-          J4IjoiT1lCc1NvcTVsQzVZN21mTkV3NEJUbElEdUFjN0c5Mzd5YWdfNHpBQ1Yt
-          ayIsInkiOiJmbDYxeS0zSXJzbjYtWGJTRXlMRUVvb3lqemNVR05qclpOMkswWm
-          xMNVIwIiwiZCI6Ik9pc016OGRQajJIVTNNSjBRVVlMRExkVjUxQ3M0S1FvSFpx
-          R3ZtWU1VQ28ifSwicHJlc2VudGF0aW9uX2p3ayI6eyJrdHkiOiJFQyIsImNydi
-          I6IlAtMjU2IiwieCI6IjN5YzVqbzlhZWE2d1V1OXB4Vmlab3h1eXlJbXRiTm95
-          RFlYbF9iV0pZNU0iLCJ5IjoiUUM0UVFuMEVjdXpQb2pQbmtEZXM0dmw5aGlwZm
-          9nMTduUTJPMFcwQjF6VSIsImQiOiJTWHJMTFh0T1RxcUJoQVA4LU9UcW91eGJY
-          QVVxUDE0R3ZFandUYTY1NHJZIn19",
+          ZXJfMjEiXSwicHJvb2Zfa2V5Ijp7Imt0eSI6IkVDIiwiY3J2IjoiUC0yNTYiLC
+          J4IjoiQTgwd2VPYWtaT0JEQ2hHOWlIVEc3TXBCc3lnd3U1V2ZFbVJYcDVyWkI5
+          USIsInkiOiJ4Zm1yX2szd2YxOG16TEt2RlNjTUtxdnhIUzRKR2Q1MG0tS1VRSn
+          NyNlBZIiwiZCI6IlJ0U1pUbnpiMVZqVGpyV0wwTHFYZDFwVWM0dWpIbjFBRzls
+          TjNEZ1EzUjgifSwicHJlc2VudGF0aW9uX2tleSI6eyJrdHkiOiJFQyIsImNydi
+          I6IlAtMjU2IiwieCI6IjdybkFST3gtY2J0QzFUQlZEQXY1T01ya002cHNSOTVo
+          RlBGWGJOaVlFNGMiLCJ5Ijoid0RnVVUzckc1S1ZRc2t4UExzd2M4MTlZUlQtLW
+          w2SDRmeEJETlpYcDR0ayIsImQiOiJ0SFhpYWVGU3NEdkd2THRyd2Q0bnprM2xH
+          T21OVmMxdURWRi1pejI4M1RVIn19",
      "payloads": [
        "MTcxNDUyMTYwMA",
        "MTcxNzE5OTk5OQ",
@@ -1306,20 +1224,20 @@ A.1.  Example Single-Use JWP
        null
      ],
      "proof": [
-       "3mzLzMYfHqDdlYgEVWsxVwHBwijBb3Jw4n7XuYePj4gWIEbFzLT6ZVL5P9Jr7ttD
-          kbAUpscIMy3Z6Ze3lS8Kgw",
-       "do0cG7X-lcX2V9TIqCZYSxxi2ACHwwEg52S-WbbkJuWtdVtPB7kbKw-EfXmCpLmb
-          FgJRwaMAfAMHbdHMD3uZeg",
-       "s2NvcmmVBr1VnzgOj75c6d4pJ_JZIDzAc1ZDim6dGzJnp85gqgVEr-Ords9Y_Cpo
-          y1KedaRhdQRbIZyD81pzEQ",
-       "xB6PsX5VrzzLHvnoWp0MpbxRqXnVAUxSXudJHRRBI-mznh9j1P5nloi0CkUG5e7Z
-          40ht2tCZmqibZLFQEJhFuQ",
-       "r2NepFMzTGJmbIju1JM8RL5WqP4cXqIfP81GaOjG6EeeCYJYkDWixzyBiBlpWOCA
-          uAVGFl2voX8cyO7MneeFMg",
-       "IFa75n9zaTm0gzbCHIduJxlS0W0CqZqjnjmYYLMNSv8O0dRTEH565MX_vdaJ-u2Z
-          Kax1C8kuEYCZt1DBTKkJKQ",
-       "n_qlHrj1QwtMI-PnsraKOdioZi-qKgZH2p9DZNF2jRDtBHXBnUbsWM7EUgD_5SJa
-          JMhfVUf2IV_bWyS3ezuxMw"
+       "2cR5WQiJtqZ4r65fqzpNfsFC6pFXPi_SwQ-i4lm4SckO9QxZqR1UgOlYGNoEHkRY
+          nJ4JWLq7fwpTyjleRmUHxQ",
+       "mWZYEJQgB1a86hgq4BLqQsA247OkotK1pivXnDkJ9nZ4TE-qLbwTahW7gAyv2aTj
+          HV2-x7nBLL0jh_2trlMrhg",
+       "UmBOID3pgwGFFn5aMsAanu2XvGlAok79t0_dnxWsaEEFouJaR3HKBHLbiu-Dbyt7
+          4B5-TC4-JYnTFwZFyl0AWg",
+       "lJfBnhxDJ3pjuQQ0NshWE3z6mIxH8YVlAl9Qf0EFyk5R5azM7ROvYdKDjLhutQCP
+          67uS5ekWVe-oPvcTUd9gcA",
+       "Bc8cd9MigvAY-vGc6B0qo22ufiSV-AwmbGDyVBtrdY5Y35yef2FGIeXz2a291LYp
+          9BEEIcuAat4aSQVA7_3uiQ",
+       "abA-_c2NXPRBNpMr1CplnXZVRUCUuOOdi3_e0VOD5irJhcQm_BnAjIYqM484fatp
+          mvJwzXhsGH4HVBr9wEHTWQ",
+       "bzri08xYmoE2ussBVwqZT8RHhmwu1BzTbTBDxVpP3ge4Bopb5x_pmRe9Ija3LDXA
+          Bu1pvD4MDDePmNUj--C4Kw"
      ]
    }
 
@@ -1328,31 +1246,31 @@ A.1.  Example Single-Use JWP
    And also in compact serialization:
 
    eyJhbGciOiJTVS1FUzI1NiIsImF1ZCI6Imh0dHBzOi8vcmVjaXBpZW50LmV4YW1wbGUuY
-   29tIiwibm9uY2UiOiJKdHg5Zkt3R2ZTX3ZJT0pzZU1WTm9kZG1YWUpsU0FGZS1XUlg2NT
-   dMeExnIn0.eyJhbGciOiJTVS1FUzI1NiIsInR5cCI6IkpQVCIsImlzcyI6Imh0dHBzOi8
+   29tIiwibm9uY2UiOiJZLVFnMkZHTEZMeDlORHk3YmpkcHZvS0Q1Y1B4TUtBS2Q1blRnZX
+   FkakdzIn0.eyJhbGciOiJTVS1FUzI1NiIsInR5cCI6IkpQVCIsImlzcyI6Imh0dHBzOi8
    vaXNzdWVyLmV4YW1wbGUiLCJjbGFpbXMiOlsiaWF0IiwiZXhwIiwiZmFtaWx5X25hbWUi
    LCJnaXZlbl9uYW1lIiwiZW1haWwiLCJhZGRyZXNzIiwiYWdlX292ZXJfMjEiXSwicHJvb
-   2ZfandrIjp7Imt0eSI6IkVDIiwiY3J2IjoiUC0yNTYiLCJ4IjoiT1lCc1NvcTVsQzVZN2
-   1mTkV3NEJUbElEdUFjN0c5Mzd5YWdfNHpBQ1YtayIsInkiOiJmbDYxeS0zSXJzbjYtWGJ
-   TRXlMRUVvb3lqemNVR05qclpOMkswWmxMNVIwIiwiZCI6Ik9pc016OGRQajJIVTNNSjBR
-   VVlMRExkVjUxQ3M0S1FvSFpxR3ZtWU1VQ28ifSwicHJlc2VudGF0aW9uX2p3ayI6eyJrd
-   HkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IjN5YzVqbzlhZWE2d1V1OXB4Vmlab3h1eX
-   lJbXRiTm95RFlYbF9iV0pZNU0iLCJ5IjoiUUM0UVFuMEVjdXpQb2pQbmtEZXM0dmw5aGl
-   wZm9nMTduUTJPMFcwQjF6VSIsImQiOiJTWHJMTFh0T1RxcUJoQVA4LU9UcW91eGJYQVVx
-   UDE0R3ZFandUYTY1NHJZIn19.MTcxNDUyMTYwMA~MTcxNzE5OTk5OQ~IkRvZSI~IkpheS
+   2Zfa2V5Ijp7Imt0eSI6IkVDIiwiY3J2IjoiUC0yNTYiLCJ4IjoiQTgwd2VPYWtaT0JEQ2
+   hHOWlIVEc3TXBCc3lnd3U1V2ZFbVJYcDVyWkI5USIsInkiOiJ4Zm1yX2szd2YxOG16TEt
+   2RlNjTUtxdnhIUzRKR2Q1MG0tS1VRSnNyNlBZIiwiZCI6IlJ0U1pUbnpiMVZqVGpyV0ww
+   THFYZDFwVWM0dWpIbjFBRzlsTjNEZ1EzUjgifSwicHJlc2VudGF0aW9uX2tleSI6eyJrd
+   HkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IjdybkFST3gtY2J0QzFUQlZEQXY1T01ya0
+   02cHNSOTVoRlBGWGJOaVlFNGMiLCJ5Ijoid0RnVVUzckc1S1ZRc2t4UExzd2M4MTlZUlQ
+   tLWw2SDRmeEJETlpYcDR0ayIsImQiOiJ0SFhpYWVGU3NEdkd2THRyd2Q0bnprM2xHT21O
+   VmMxdURWRi1pejI4M1RVIn19.MTcxNDUyMTYwMA~MTcxNzE5OTk5OQ~IkRvZSI~IkpheS
    I~ImpheWRvZUBleGFtcGxlLm9yZyI~eyJmb3JtYXR0ZWQiOiIxMjM0IE1haW4gU3QuXG5
    Bbnl0b3duLCBDQSAxMjM0NVxuVVNBIiwic3RyZWV0X2FkZHJlc3MiOiIxMjM0IE1haW4g
    U3QuIiwibG9jYWxpdHkiOiJBbnl0b3duIiwicmVnaW9uIjoiQ0EiLCJwb3N0YWxfY29kZ
-   SI6MTIzNDUsImNvdW50cnkiOiJVU0EifQ~dHJ1ZQ~~.3mzLzMYfHqDdlYgEVWsxVwHBwi
-   jBb3Jw4n7XuYePj4gWIEbFzLT6ZVL5P9Jr7ttDkbAUpscIMy3Z6Ze3lS8Kgw~do0cG7X-
-   lcX2V9TIqCZYSxxi2ACHwwEg52S-WbbkJuWtdVtPB7kbKw-EfXmCpLmbFgJRwaMAfAMHb
-   dHMD3uZeg~s2NvcmmVBr1VnzgOj75c6d4pJ_JZIDzAc1ZDim6dGzJnp85gqgVEr-Ords9
-   Y_Cpoy1KedaRhdQRbIZyD81pzEQ~xB6PsX5VrzzLHvnoWp0MpbxRqXnVAUxSXudJHRRBI
-   -mznh9j1P5nloi0CkUG5e7Z40ht2tCZmqibZLFQEJhFuQ~r2NepFMzTGJmbIju1JM8RL5
-   WqP4cXqIfP81GaOjG6EeeCYJYkDWixzyBiBlpWOCAuAVGFl2voX8cyO7MneeFMg~IFa75
-   n9zaTm0gzbCHIduJxlS0W0CqZqjnjmYYLMNSv8O0dRTEH565MX_vdaJ-u2ZKax1C8kuEY
-   CZt1DBTKkJKQ~n_qlHrj1QwtMI-PnsraKOdioZi-qKgZH2p9DZNF2jRDtBHXBnUbsWM7E
-   UgD_5SJaJMhfVUf2IV_bWyS3ezuxMw
+   SI6MTIzNDUsImNvdW50cnkiOiJVU0EifQ~dHJ1ZQ~~.2cR5WQiJtqZ4r65fqzpNfsFC6p
+   FXPi_SwQ-i4lm4SckO9QxZqR1UgOlYGNoEHkRYnJ4JWLq7fwpTyjleRmUHxQ~mWZYEJQg
+   B1a86hgq4BLqQsA247OkotK1pivXnDkJ9nZ4TE-qLbwTahW7gAyv2aTjHV2-x7nBLL0jh
+   _2trlMrhg~UmBOID3pgwGFFn5aMsAanu2XvGlAok79t0_dnxWsaEEFouJaR3HKBHLbiu-
+   Dbyt74B5-TC4-JYnTFwZFyl0AWg~lJfBnhxDJ3pjuQQ0NshWE3z6mIxH8YVlAl9Qf0EFy
+   k5R5azM7ROvYdKDjLhutQCP67uS5ekWVe-oPvcTUd9gcA~Bc8cd9MigvAY-vGc6B0qo22
+   ufiSV-AwmbGDyVBtrdY5Y35yef2FGIeXz2a291LYp9BEEIcuAat4aSQVA7_3uiQ~abA-_
+   c2NXPRBNpMr1CplnXZVRUCUuOOdi3_e0VOD5irJhcQm_BnAjIYqM484fatpmvJwzXhsGH
+   4HVBr9wEHTWQ~bzri08xYmoE2ussBVwqZT8RHhmwu1BzTbTBDxVpP3ge4Bopb5x_pmRe9
+   Ija3LDXABu1pvD4MDDePmNUj--C4Kw
 
    |  Figure: Final Presentation in Compact Serialization
 
@@ -1367,13 +1285,13 @@ A.2.  Example BBS JWP
      "alg": "BBS",
      "use": "proof",
      "crv": "BLS12381G2",
-     "x": "E04faJcFpFPA2Q44uB9_R-IV1vuwDRUioCeeX0ZGJCsklJ2U0ccDOGGGnlUdY
-          kSRBQTymu_ewAgxJsL_v7-gWslAZ_Giu9UIvVW4ThGIZQ02ypG4FgCLqpyeVHj
-          vuNLK",
-     "y": "BmeRr20sjdg7-ETeVaHqCuGz_DOgpID-qorSn6dZCcdMTlxin-FYJaIAZZxib
-          ItFEyZIWGVhZtC2xUYH5B3d7zAOF8ol3JyI-qMj2Dp9Iy2oJ0iYImHDh7-lLMH
-          DFudx",
-     "d": "Gd2Ty4iNNxQwf3VQc1sblojb-iYlunp5A5Q34UMvJ7I"
+     "x": "AC0r1SPiKPbAcRkBpMsMC1_Vg5kscveDbIc8TfukVlVAqCu9mZrgIkajF-PRP
+          g0EEL8QuwUDv7wcpRqGZip-fXA3mItZneVQg_mhOydFw-1hHzFsh7LpnY1Pnbc
+          XEFQo",
+     "y": "GTp8hq7p722xHYdPHikvTXj_iwC0S8o3CzNYG2xWOW-kS3s9u6U_vZPqFafAS
+          1aRATqjEmRgJScUTW4vZo2dkBX9gnERMRi2oDB6J4XPRMbNAAsdUHuT6KXQvvK
+          I6KWg",
+     "d": "N6odUEAziU1aUCKWIyKqNrcUFrHu2XuRfUhUH5HxlV4"
    }
 
                   Figure 10: BBS private key in JWK format
@@ -1427,8 +1345,8 @@ A.2.  Example BBS JWP
        "dHJ1ZQ"
      ],
      "proof": [
-       "oOaEWwSPhhgjRlhuPeeYM2QDd0cINeLFNkabG7DnQyn3LVEjeQUtLaUzT2uPQeXX
-          c8whXnkQGMg0u4KoMggR2Gvoi25sFGZdxpbbQnETHEw"
+       "tQb2mJzMl0iNVrWJiyLHeMjMQL6wYui5MSAhsJ7yMbQWimpjsrGPOuni6MiVN43l
+          Knxg0We9cgJ5dYyxZ707KDOns2U7nb16uVXL4deczPk"
      ]
    }
 
@@ -1439,16 +1357,16 @@ A.2.  Example BBS JWP
    eWRvZUBleGFtcGxlLm9yZyI~eyJmb3JtYXR0ZWQiOiIxMjM0IE1haW4gU3QuXG5Bbnl0b
    3duLCBDQSAxMjM0NVxuVVNBIiwic3RyZWV0X2FkZHJlc3MiOiIxMjM0IE1haW4gU3QuIi
    wibG9jYWxpdHkiOiJBbnl0b3duIiwicmVnaW9uIjoiQ0EiLCJwb3N0YWxfY29kZSI6MTI
-   zNDUsImNvdW50cnkiOiJVU0EifQ~dHJ1ZQ.oOaEWwSPhhgjRlhuPeeYM2QDd0cINeLFNk
-   abG7DnQyn3LVEjeQUtLaUzT2uPQeXXc8whXnkQGMg0u4KoMggR2Gvoi25sFGZdxpbbQnE
-   THEw
+   zNDUsImNvdW50cnkiOiJVU0EifQ~dHJ1ZQ.tQb2mJzMl0iNVrWJiyLHeMjMQL6wYui5MS
+   AhsJ7yMbQWimpjsrGPOuni6MiVN43lKnxg0We9cgJ5dYyxZ707KDOns2U7nb16uVXL4de
+   czPk
 
                Figure 14: Issued JWP (compact serialization)
 
    For a presentation with the following presentation header:
 
    {
-       "alg": "BBS-PROOF",
+       "alg": "BBS",
        "aud": "https://recipient.example.com",
        "nonce": "wrmBRkKtXjQ"
    }
@@ -1460,8 +1378,8 @@ A.2.  Example BBS JWP
    following serializations:
 
    {
-     "presentation": "eyJhbGciOiJCQlMtUFJPT0YiLCJhdWQiOiJodHRwczovL3JlY2
-          lwaWVudC5leGFtcGxlLmNvbSIsIm5vbmNlIjoid3JtQlJrS3RYalEifQ",
+     "presentation": "eyJhbGciOiJCQlMiLCJhdWQiOiJodHRwczovL3JlY2lwaWVudC
+          5leGFtcGxlLmNvbSIsIm5vbmNlIjoid3JtQlJrS3RYalEifQ",
      "issuer": "eyJraWQiOiJIamZjcHlqdVpRLU84WWUyaFFuTmJUOVJiYm5yb2JwdGRu
           RXhSMERValU4IiwiYWxnIjoiQkJTIn0",
      "payloads": [
@@ -1474,30 +1392,30 @@ A.2.  Example BBS JWP
        null
      ],
      "proof": [
-       "sQeojxb0OUm9MVzsOg7_hQfziXRk0RtnzH8NkS6M3AdP-pA_1ZGIJVRKQCbVrdUq
-          inhtId6CTaqFoFKOWWLu2pkQ0ZbrhSIEsRUaLD3a4Y8qkv1fRVk6YQvxxGdUzb
-          2yuVooncwBLQejYVgBWP8NhhqiBUb0hBeLtWccTHy-FXD0pEnOuOvQp_-LBUqI
-          JUqRXA_qUa0hglykvdhn0YKyrI_cirhgA6WxAoZpUXeRNDNivtPWO0JtwxPMSp
-          8NPkyCD6hhLjIzymIb-wQRnVEL6CBM-jr3aIrBfSkelcHUqwHKrJrjb78R9HXy
-          DrHPiWFUU5PeIuNrJ-wXmkTtNV_L1PreBArnxp1Qmd726_jkS0AoGd1bz5yAmg
-          J-MRE9BAmNbX2quXLCrqOCF2nRTRBm8wpZ_I1cdaLH1maXKntbNq104O7_XksZ
-          m6AG0__0eiDXGVBLKV-hawoobHlURsPY_9PC7_TLk4py1845ccsgaRo"
+       "sKgVxPb2f3bXZr67hu2gEt9VRKw0oRTMen8spsnqdar_y_gRTjmAiZBvQ6hc8sf8
+          pESAGzgdPmYHwaimTVuTko8L3zEssV8keMmgRFgI5jBtO5MMm0DGE8Kqmlt8Sy
+          PJliH6vVAy35TozyhbO7tNSO6mtz7VDjOZvN7I9LOPz4hUidGwGMvUTHHvEZLJ
+          A4G0N3mjgVw7SD8EiCSGw6z0IUveb2HWOePoNQxW7IW7BiAGEMK8puG7ACNhQK
+          HPBPXztSBaVRMBZxdRnO4hJcR7L08PDY2tL32VRLb9rl5qtr4a4J2maHQbKJ9P
+          pCZsuuDVSnYcnW1pH21-T7vOj9oX67efTevSfMjm7OLOslBKtWNgJFRAiqMLGU
+          7c2kf6cfOen1TAP1hNf8UaFQNs2W42-2M7IReFxBjaPb_hCg5k6CV7ZFUMF0Ho
+          -DNqf-RGwEJSARgGMUDtiZQmKzWPHnW9_R5seLZeEzfFj0mebVBivuU"
      ]
    }
 
               Figure 16: Presentation JWP (JSON serialization)
 
-   eyJhbGciOiJCQlMtUFJPT0YiLCJhdWQiOiJodHRwczovL3JlY2lwaWVudC5leGFtcGxlL
-   mNvbSIsIm5vbmNlIjoid3JtQlJrS3RYalEifQ.eyJraWQiOiJIamZjcHlqdVpRLU84WWU
-   yaFFuTmJUOVJiYm5yb2JwdGRuRXhSMERValU4IiwiYWxnIjoiQkJTIn0.MTcxNDUyMTYw
-   MA~MTcxNzE5OTk5OQ~IkRvZSI~IkpheSI~~~.sQeojxb0OUm9MVzsOg7_hQfziXRk0Rtn
-   zH8NkS6M3AdP-pA_1ZGIJVRKQCbVrdUqinhtId6CTaqFoFKOWWLu2pkQ0ZbrhSIEsRUaL
-   D3a4Y8qkv1fRVk6YQvxxGdUzb2yuVooncwBLQejYVgBWP8NhhqiBUb0hBeLtWccTHy-FX
-   D0pEnOuOvQp_-LBUqIJUqRXA_qUa0hglykvdhn0YKyrI_cirhgA6WxAoZpUXeRNDNivtP
-   WO0JtwxPMSp8NPkyCD6hhLjIzymIb-wQRnVEL6CBM-jr3aIrBfSkelcHUqwHKrJrjb78R
-   9HXyDrHPiWFUU5PeIuNrJ-wXmkTtNV_L1PreBArnxp1Qmd726_jkS0AoGd1bz5yAmgJ-M
-   RE9BAmNbX2quXLCrqOCF2nRTRBm8wpZ_I1cdaLH1maXKntbNq104O7_XksZm6AG0__0ei
-   DXGVBLKV-hawoobHlURsPY_9PC7_TLk4py1845ccsgaRo
+   eyJhbGciOiJCQlMiLCJhdWQiOiJodHRwczovL3JlY2lwaWVudC5leGFtcGxlLmNvbSIsI
+   m5vbmNlIjoid3JtQlJrS3RYalEifQ.eyJraWQiOiJIamZjcHlqdVpRLU84WWUyaFFuTmJ
+   UOVJiYm5yb2JwdGRuRXhSMERValU4IiwiYWxnIjoiQkJTIn0.MTcxNDUyMTYwMA~MTcxN
+   zE5OTk5OQ~IkRvZSI~IkpheSI~~~.sKgVxPb2f3bXZr67hu2gEt9VRKw0oRTMen8spsnq
+   dar_y_gRTjmAiZBvQ6hc8sf8pESAGzgdPmYHwaimTVuTko8L3zEssV8keMmgRFgI5jBtO
+   5MMm0DGE8Kqmlt8SyPJliH6vVAy35TozyhbO7tNSO6mtz7VDjOZvN7I9LOPz4hUidGwGM
+   vUTHHvEZLJA4G0N3mjgVw7SD8EiCSGw6z0IUveb2HWOePoNQxW7IW7BiAGEMK8puG7ACN
+   hQKHPBPXztSBaVRMBZxdRnO4hJcR7L08PDY2tL32VRLb9rl5qtr4a4J2maHQbKJ9PpCZs
+   uuDVSnYcnW1pH21-T7vOj9oX67efTevSfMjm7OLOslBKtWNgJFRAiqMLGU7c2kf6cfOen
+   1TAP1hNf8UaFQNs2W42-2M7IReFxBjaPb_hCg5k6CV7ZFUMF0Ho-DNqf-RGwEJSARgGMU
+   DtiZQmKzWPHnW9_R5seLZeEzfFj0mebVBivuU
 
             Figure 17: Presentation JWP (compact serialization)
 
@@ -1510,16 +1428,16 @@ A.3.  Example MAC JWP
    {
      "kty": "EC",
      "crv": "P-256",
-     "x": "kqXaVLqd7oE8o6XI1tjoQRBQJdp1BnVUhS1XPY_m-dc",
-     "y": "6RzZPzdMQrqapjoes51PnEUeeb0MQfXrh4jlchbWPUk",
-     "d": "NqXeHnCsObT9adsblbgWCS-HGphzpCEDdWQDoE4hI7A"
+     "x": "hipI3sXkSikJSpg8KCVWYvJ8HTQjL4YmPW5pd7emZQY",
+     "y": "uW7F8k6ANH36LQGtxf0lk4hKzHKX_pgy6bRS3gYHB2Q",
+     "d": "PHXDLls6R62oB3Il-TB42xgTcig6DKW5lCrvDZmeqsY"
    }
 
                        Figure 18: Issuer private key
 
    This is the Issuer's ephemerally generated shared secret:
 
-   "zZce4kUUwyWxquByMXIs3VwkNKoCQTVktt755pJVh8Q"
+   "02T4tXDytdOEXYsdFz4cCAmVwwb_AWcUvjRgMKcfy5I"
 
                           Figure 19: Shared Secret
 
@@ -1528,9 +1446,9 @@ A.3.  Example MAC JWP
    {
      "kty": "EC",
      "crv": "P-256",
-     "x": "3yc5jo9aea6wUu9pxViZoxuyyImtbNoyDYXl_bWJY5M",
-     "y": "QC4QQn0EcuzPojPnkDes4vl9hipfog17nQ2O0W0B1zU",
-     "d": "SXrLLXtOTqqBhAP8-OTqouxbXAUqP14GvEjwTa654rY"
+     "x": "7rnAROx-cbtC1TBVDAv5OMrkM6psR95hFPFXbNiYE4c",
+     "y": "wDgUU3rG5KVQskxPLswc819YRT--l6H4fxBDNZXp4tk",
+     "d": "tHXiaeFSsDvGvLtrwd4nzk3lGOmNVc1uDVF-iz283TU"
    }
 
                        Figure 20: Holder private key
@@ -1550,12 +1468,12 @@ A.3.  Example MAC JWP
        "address",
        "age_over_21"
      ],
-     "pjwk": {
+     "presentation_key": {
        "kty": "EC",
        "crv": "P-256",
        "use": "sign",
-       "x": "3yc5jo9aea6wUu9pxViZoxuyyImtbNoyDYXl_bWJY5M",
-       "y": "QC4QQn0EcuzPojPnkDes4vl9hipfog17nQ2O0W0B1zU"
+       "x": "7rnAROx-cbtC1TBVDAv5OMrkM6psR95hFPFXbNiYE4c",
+       "y": "wDgUU3rG5KVQskxPLswc819YRT--l6H4fxBDNZXp4tk"
      }
    }
 
@@ -1584,7 +1502,7 @@ A.3.  Example MAC JWP
    the issuer protected header as a UTF-8 encoded octet string.  This
    results in the following MAC:
 
-   pxeCvMB3vxzOEMLfmsVp7NONO2bygiz2yNsMl7U0voM
+   NwXKcOTk5ZnxObnLooLcGjrHdXBbNKzvt-_Vs1x8bw8
 
        Figure 23: Issuer MAC of protected header (base64url-encoded)
 
@@ -1594,13 +1512,13 @@ A.3.  Example MAC JWP
    HMAC operation.  This results in the following set of derived keys:
 
    [
-     "W-xQwLmaMMvvzmaU0VRGLIK6FECNxC4c6Zv4meZiChI",
-     "MUTvW_Aa6xVBEYoX1DyNC1kkC-gLrztA3yL9kCywmlg",
-     "WznktNpZrjpJ_RdpoZxIhA5U_zD5OCLXvhn1rltPyVA",
-     "wYtyc3YVc0_YA8lvJ0-d7ichs1KL1muGzPLMCreiT7E",
-     "pPigrgViIsGrQuibwU5McuNwq5iQD8-geMifQEFUuu4",
-     "HKOsSfkrq_r7nJHHTwhySpBPZrjNgYDA7LQPznaj_bE",
-     "4nEg_9wKf5KJ9ptQv3yk-kKugEtL-XLxJPTTSzCNYjY"
+     "02LqsJSB_C97dsRQKJDIhjpMSPAw3Ne01D9Obc_IN4I",
+     "H6ZuXcZtl8ypBKiR27sf5hcPlCCClKJaNHBN3BQz0XA",
+     "qFchDr1QKwNL_y57kxdXpXiz9E0LpVARRk5Y5yLST9U",
+     "8u0ZboyWQYjuRADZQS768KN8qZGYRRKoXs141GGwAOs",
+     "EVcHJJyw1-jiXL1e7gxMmsuyWyYh5mOTJVqRc02nEqY",
+     "CUXDYpaRLeTZtExXempg4ED03E69w5RZlJQGXv46m7A",
+     "biOjvUd4Lm5HzW94zWWVrkslLnwQfy-DrqtMLPyThHk"
    ]
 
             Figure 24: Derived payload keys (base64url-encoded)
@@ -1609,13 +1527,13 @@ A.3.  Example MAC JWP
    payload key.  This results in the following set of MAC values:
 
    [
-     "r74D0Oo4lmwcNUX90Z2IwkcBh3NyZNTqDEvc5s68brs",
-     "_PHx8xo_JL0rI3PFZnvBAJRwcn_3Uv4IorbJfSWtEMU",
-     "XUBmvIJfsszmMHtOWNmw4E3BNEMcuC_aGujDxQGd14Q",
-     "voSqkcGHexfqNTh0oE5GIgdwY50cuVXOTL7up3sVxM8",
-     "T9AMMyntB3_l888vrxw5fyUNhd4Kzgjyk3QZ-3u2uBk",
-     "ybjPKR15uCNYOEEgtiQ7FVx3wuu4XwEzi5mfOKbPVfc",
-     "Vx6HR1npm64bRJw6TXuY_takEa_5UKd8VQM1NhudwV0"
+     "FPmIxTB6kq5LViCkReng0VqD_NJl_sYHymVGEvEfJzM",
+     "U0ll1aF0NiNNH55iKgFqJJulDw10u93McXPodPatJpk",
+     "k1plLRBpEp4K3hDXroqx0pWBUL2h27PG0YtUOL1PeZ0",
+     "M1EEAR7eDOmivdI2UxpVtYYVp62H5_q57qU9ZjktSec",
+     "FWx8zzRvSd9dKEK3lCU4-vcw4nQ_iVATWYe6Vv_p4is",
+     "ZegnVTr972ArSvUJrUju4S3ICWYhAx0W7x-Lo_v2T18",
+     "vSZX0v03tSvxfiUSbzl2SwwOzD4-35QPMwQhhelzHqI"
    ]
 
              Figure 25: Payload MAC values (base64url-encoded)
@@ -1629,9 +1547,9 @@ A.3.  Example MAC JWP
    combined MAC representation, and the shared secret.
 
    [
-     "A2Ox4aa93hHTdfKUBUs-zfSIf5nfZLULjbITtl-uQODCkniqi7x3qI6CkGh0jOs7cV
-   k7MaQ6lKR6mGvUVejqMg",
-     "O5onFp4vP9q_ceIeG1vjiEALudbX5CL39RbBkZa2c-g"
+     "vubsxZsyqlvKkFZHyoBY4dQjRzr6SU9fNoHGPDezxUThvj6DPi5VTd3EpTKVOlvgC0
+   uyd5SWtkj6Qs0kOIwhCg",
+     "CgvtR5B21tt4nwSdh-HfQcxSGvkt9KX7rIqhroDVrqk"
    ]
 
                 Figure 26: Issued Proof (base64url-encoded)
@@ -1641,10 +1559,11 @@ A.3.  Example MAC JWP
    {
      "issuer": "eyJhbGciOiJNQUMtSDI1NiIsInR5cCI6IkpQVCIsImlzcyI6Imh0dHBz
    Oi8vaXNzdWVyLmV4YW1wbGUiLCJjbGFpbXMiOlsiaWF0IiwiZXhwIiwiZmFtaWx5X25hb
-   WUiLCJnaXZlbl9uYW1lIiwiZW1haWwiLCJhZGRyZXNzIiwiYWdlX292ZXJfMjEiXSwicG
-   p3ayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwidXNlIjoic2lnbiIsIngiOiIzeWM
-   1am85YWVhNndVdTlweFZpWm94dXl5SW10Yk5veURZWGxfYldKWTVNIiwieSI6IlFDNFFR
-   bjBFY3V6UG9qUG5rRGVzNHZsOWhpcGZvZzE3blEyTzBXMEIxelUifX0",
+   WUiLCJnaXZlbl9uYW1lIiwiZW1haWwiLCJhZGRyZXNzIiwiYWdlX292ZXJfMjEiXSwicH
+   Jlc2VudGF0aW9uX2tleSI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwidXNlIjoic2l
+   nbiIsIngiOiI3cm5BUk94LWNidEMxVEJWREF2NU9NcmtNNnBzUjk1aEZQRlhiTmlZRTRj
+   IiwieSI6IndEZ1VVM3JHNUtWUXNreFBMc3djODE5WVJULS1sNkg0ZnhCRE5aWHA0dGsif
+   X0",
      "payloads": [
        "MTcxNDUyMTYwMA",
        "MTcxNzE5OTk5OQ",
@@ -1658,9 +1577,9 @@ A.3.  Example MAC JWP
        "dHJ1ZQ"
      ],
      "proof": [
-       "A2Ox4aa93hHTdfKUBUs-zfSIf5nfZLULjbITtl-uQODCkniqi7x3qI6CkGh0jOs7
-   cVk7MaQ6lKR6mGvUVejqMg",
-       "O5onFp4vP9q_ceIeG1vjiEALudbX5CL39RbBkZa2c-g"
+       "vubsxZsyqlvKkFZHyoBY4dQjRzr6SU9fNoHGPDezxUThvj6DPi5VTd3EpTKVOlvg
+   C0uyd5SWtkj6Qs0kOIwhCg",
+       "CgvtR5B21tt4nwSdh-HfQcxSGvkt9KX7rIqhroDVrqk"
      ]
    }
 
@@ -1670,16 +1589,16 @@ A.3.  Example MAC JWP
 
    eyJhbGciOiJNQUMtSDI1NiIsInR5cCI6IkpQVCIsImlzcyI6Imh0dHBzOi8vaXNzdWVyL
    mV4YW1wbGUiLCJjbGFpbXMiOlsiaWF0IiwiZXhwIiwiZmFtaWx5X25hbWUiLCJnaXZlbl
-   9uYW1lIiwiZW1haWwiLCJhZGRyZXNzIiwiYWdlX292ZXJfMjEiXSwicGp3ayI6eyJrdHk
-   iOiJFQyIsImNydiI6IlAtMjU2IiwidXNlIjoic2lnbiIsIngiOiIzeWM1am85YWVhNndV
-   dTlweFZpWm94dXl5SW10Yk5veURZWGxfYldKWTVNIiwieSI6IlFDNFFRbjBFY3V6UG9qU
-   G5rRGVzNHZsOWhpcGZvZzE3blEyTzBXMEIxelUifX0.MTcxNDUyMTYwMA~MTcxNzE5OTk
-   5OQ~IkRvZSI~IkpheSI~ImpheWRvZUBleGFtcGxlLm9yZyI~eyJmb3JtYXR0ZWQiOiIxM
-   jM0IE1haW4gU3QuXG5Bbnl0b3duLCBDQSAxMjM0NVxuVVNBIiwic3RyZWV0X2FkZHJlc3
-   MiOiIxMjM0IE1haW4gU3QuIiwibG9jYWxpdHkiOiJBbnl0b3duIiwicmVnaW9uIjoiQ0E
-   iLCJwb3N0YWxfY29kZSI6MTIzNDUsImNvdW50cnkiOiJVU0EifQ~dHJ1ZQ.A2Ox4aa93h
-   HTdfKUBUs-zfSIf5nfZLULjbITtl-uQODCkniqi7x3qI6CkGh0jOs7cVk7MaQ6lKR6mGv
-   UVejqMg~O5onFp4vP9q_ceIeG1vjiEALudbX5CL39RbBkZa2c-g
+   9uYW1lIiwiZW1haWwiLCJhZGRyZXNzIiwiYWdlX292ZXJfMjEiXSwicHJlc2VudGF0aW9
+   uX2tleSI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwidXNlIjoic2lnbiIsIngiOiI3
+   cm5BUk94LWNidEMxVEJWREF2NU9NcmtNNnBzUjk1aEZQRlhiTmlZRTRjIiwieSI6IndEZ
+   1VVM3JHNUtWUXNreFBMc3djODE5WVJULS1sNkg0ZnhCRE5aWHA0dGsifX0.MTcxNDUyMT
+   YwMA~MTcxNzE5OTk5OQ~IkRvZSI~IkpheSI~ImpheWRvZUBleGFtcGxlLm9yZyI~eyJmb
+   3JtYXR0ZWQiOiIxMjM0IE1haW4gU3QuXG5Bbnl0b3duLCBDQSAxMjM0NVxuVVNBIiwic3
+   RyZWV0X2FkZHJlc3MiOiIxMjM0IE1haW4gU3QuIiwibG9jYWxpdHkiOiJBbnl0b3duIiw
+   icmVnaW9uIjoiQ0EiLCJwb3N0YWxfY29kZSI6MTIzNDUsImNvdW50cnkiOiJVU0EifQ~d
+   HJ1ZQ.vubsxZsyqlvKkFZHyoBY4dQjRzr6SU9fNoHGPDezxUThvj6DPi5VTd3EpTKVOlv
+   gC0uyd5SWtkj6Qs0kOIwhCg~CgvtR5B21tt4nwSdh-HfQcxSGvkt9KX7rIqhroDVrqk
 
               Figure 28: Issued JWP (in compact serialization)
 
@@ -1690,7 +1609,7 @@ A.3.  Example MAC JWP
    {
      "alg": "MAC-H256",
      "aud": "https://recipient.example.com",
-     "nonce": "Jtx9fKwGfS_vIOJseMVNoddmXYJlSAFe-WRX657LxLg"
+     "nonce": "Y-Qg2FGLFLx9NDy7bjdpvoKD5cPxMKAKd5nTgeqdjGs"
    }
 
                   Figure 29: Presentation Protected Header
@@ -1712,17 +1631,17 @@ A.3.  Example MAC JWP
    This results in the following proof:
 
    [
-     "yqdXieUqwGBmQ9CXCM1fLa3KlvR_ZCYM8XTPLmwiY7MTer7mqQ8ddClbZLStEU370N
-   70FPj_hBYwNBDHdxV-zQ",
-     "A2Ox4aa93hHTdfKUBUs-zfSIf5nfZLULjbITtl-uQODCkniqi7x3qI6CkGh0jOs7cV
-   k7MaQ6lKR6mGvUVejqMg",
-     "W-xQwLmaMMvvzmaU0VRGLIK6FECNxC4c6Zv4meZiChI",
-     "MUTvW_Aa6xVBEYoX1DyNC1kkC-gLrztA3yL9kCywmlg",
-     "WznktNpZrjpJ_RdpoZxIhA5U_zD5OCLXvhn1rltPyVA",
-     "wYtyc3YVc0_YA8lvJ0-d7ichs1KL1muGzPLMCreiT7E",
-     "T9AMMyntB3_l888vrxw5fyUNhd4Kzgjyk3QZ-3u2uBk",
-     "ybjPKR15uCNYOEEgtiQ7FVx3wuu4XwEzi5mfOKbPVfc",
-     "Vx6HR1npm64bRJw6TXuY_takEa_5UKd8VQM1NhudwV0"
+     "NqAg6k25VM19zO-UkoQQVXKeGfSj9vl1FJIJTsKwovWj2pvBFGnc7vCo1SXQFhzZrR
+   gyYs47p1OMxrrQ9_hqDQ",
+     "vubsxZsyqlvKkFZHyoBY4dQjRzr6SU9fNoHGPDezxUThvj6DPi5VTd3EpTKVOlvgC0
+   uyd5SWtkj6Qs0kOIwhCg",
+     "02LqsJSB_C97dsRQKJDIhjpMSPAw3Ne01D9Obc_IN4I",
+     "H6ZuXcZtl8ypBKiR27sf5hcPlCCClKJaNHBN3BQz0XA",
+     "qFchDr1QKwNL_y57kxdXpXiz9E0LpVARRk5Y5yLST9U",
+     "8u0ZboyWQYjuRADZQS768KN8qZGYRRKoXs141GGwAOs",
+     "FWx8zzRvSd9dKEK3lCU4-vcw4nQ_iVATWYe6Vv_p4is",
+     "ZegnVTr972ArSvUJrUju4S3ICWYhAx0W7x-Lo_v2T18",
+     "vSZX0v03tSvxfiUSbzl2SwwOzD4-35QPMwQhhelzHqI"
    ]
 
              Figure 30: Presentation proof (base64url-encoded)
@@ -1731,14 +1650,15 @@ A.3.  Example MAC JWP
 
    {
      "presentation": "eyJhbGciOiJNQUMtSDI1NiIsImF1ZCI6Imh0dHBzOi8vcmVjaX
-   BpZW50LmV4YW1wbGUuY29tIiwibm9uY2UiOiJKdHg5Zkt3R2ZTX3ZJT0pzZU1WTm9kZG1
-   YWUpsU0FGZS1XUlg2NTdMeExnIn0",
+   BpZW50LmV4YW1wbGUuY29tIiwibm9uY2UiOiJZLVFnMkZHTEZMeDlORHk3YmpkcHZvS0Q
+   1Y1B4TUtBS2Q1blRnZXFkakdzIn0",
      "issuer": "eyJhbGciOiJNQUMtSDI1NiIsInR5cCI6IkpQVCIsImlzcyI6Imh0dHBz
    Oi8vaXNzdWVyLmV4YW1wbGUiLCJjbGFpbXMiOlsiaWF0IiwiZXhwIiwiZmFtaWx5X25hb
-   WUiLCJnaXZlbl9uYW1lIiwiZW1haWwiLCJhZGRyZXNzIiwiYWdlX292ZXJfMjEiXSwicG
-   p3ayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwidXNlIjoic2lnbiIsIngiOiIzeWM
-   1am85YWVhNndVdTlweFZpWm94dXl5SW10Yk5veURZWGxfYldKWTVNIiwieSI6IlFDNFFR
-   bjBFY3V6UG9qUG5rRGVzNHZsOWhpcGZvZzE3blEyTzBXMEIxelUifX0",
+   WUiLCJnaXZlbl9uYW1lIiwiZW1haWwiLCJhZGRyZXNzIiwiYWdlX292ZXJfMjEiXSwicH
+   Jlc2VudGF0aW9uX2tleSI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwidXNlIjoic2l
+   nbiIsIngiOiI3cm5BUk94LWNidEMxVEJWREF2NU9NcmtNNnBzUjk1aEZQRlhiTmlZRTRj
+   IiwieSI6IndEZ1VVM3JHNUtWUXNreFBMc3djODE5WVJULS1sNkg0ZnhCRE5aWHA0dGsif
+   X0",
      "payloads": [
        "MTcxNDUyMTYwMA",
        "MTcxNzE5OTk5OQ",
@@ -1749,17 +1669,17 @@ A.3.  Example MAC JWP
        null
      ],
      "proof": [
-       "yqdXieUqwGBmQ9CXCM1fLa3KlvR_ZCYM8XTPLmwiY7MTer7mqQ8ddClbZLStEU37
-   0N70FPj_hBYwNBDHdxV-zQ",
-       "A2Ox4aa93hHTdfKUBUs-zfSIf5nfZLULjbITtl-uQODCkniqi7x3qI6CkGh0jOs7
-   cVk7MaQ6lKR6mGvUVejqMg",
-       "W-xQwLmaMMvvzmaU0VRGLIK6FECNxC4c6Zv4meZiChI",
-       "MUTvW_Aa6xVBEYoX1DyNC1kkC-gLrztA3yL9kCywmlg",
-       "WznktNpZrjpJ_RdpoZxIhA5U_zD5OCLXvhn1rltPyVA",
-       "wYtyc3YVc0_YA8lvJ0-d7ichs1KL1muGzPLMCreiT7E",
-       "T9AMMyntB3_l888vrxw5fyUNhd4Kzgjyk3QZ-3u2uBk",
-       "ybjPKR15uCNYOEEgtiQ7FVx3wuu4XwEzi5mfOKbPVfc",
-       "Vx6HR1npm64bRJw6TXuY_takEa_5UKd8VQM1NhudwV0"
+       "NqAg6k25VM19zO-UkoQQVXKeGfSj9vl1FJIJTsKwovWj2pvBFGnc7vCo1SXQFhzZ
+   rRgyYs47p1OMxrrQ9_hqDQ",
+       "vubsxZsyqlvKkFZHyoBY4dQjRzr6SU9fNoHGPDezxUThvj6DPi5VTd3EpTKVOlvg
+   C0uyd5SWtkj6Qs0kOIwhCg",
+       "02LqsJSB_C97dsRQKJDIhjpMSPAw3Ne01D9Obc_IN4I",
+       "H6ZuXcZtl8ypBKiR27sf5hcPlCCClKJaNHBN3BQz0XA",
+       "qFchDr1QKwNL_y57kxdXpXiz9E0LpVARRk5Y5yLST9U",
+       "8u0ZboyWQYjuRADZQS768KN8qZGYRRKoXs141GGwAOs",
+       "FWx8zzRvSd9dKEK3lCU4-vcw4nQ_iVATWYe6Vv_p4is",
+       "ZegnVTr972ArSvUJrUju4S3ICWYhAx0W7x-Lo_v2T18",
+       "vSZX0v03tSvxfiUSbzl2SwwOzD4-35QPMwQhhelzHqI"
      ]
    }
 
@@ -1768,21 +1688,21 @@ A.3.  Example MAC JWP
    The same JWP in compact serialization:
 
    eyJhbGciOiJNQUMtSDI1NiIsImF1ZCI6Imh0dHBzOi8vcmVjaXBpZW50LmV4YW1wbGUuY
-   29tIiwibm9uY2UiOiJKdHg5Zkt3R2ZTX3ZJT0pzZU1WTm9kZG1YWUpsU0FGZS1XUlg2NT
-   dMeExnIn0.eyJhbGciOiJNQUMtSDI1NiIsInR5cCI6IkpQVCIsImlzcyI6Imh0dHBzOi8
+   29tIiwibm9uY2UiOiJZLVFnMkZHTEZMeDlORHk3YmpkcHZvS0Q1Y1B4TUtBS2Q1blRnZX
+   FkakdzIn0.eyJhbGciOiJNQUMtSDI1NiIsInR5cCI6IkpQVCIsImlzcyI6Imh0dHBzOi8
    vaXNzdWVyLmV4YW1wbGUiLCJjbGFpbXMiOlsiaWF0IiwiZXhwIiwiZmFtaWx5X25hbWUi
-   LCJnaXZlbl9uYW1lIiwiZW1haWwiLCJhZGRyZXNzIiwiYWdlX292ZXJfMjEiXSwicGp3a
-   yI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwidXNlIjoic2lnbiIsIngiOiIzeWM1am
-   85YWVhNndVdTlweFZpWm94dXl5SW10Yk5veURZWGxfYldKWTVNIiwieSI6IlFDNFFRbjB
-   FY3V6UG9qUG5rRGVzNHZsOWhpcGZvZzE3blEyTzBXMEIxelUifX0.MTcxNDUyMTYwMA~M
-   TcxNzE5OTk5OQ~IkRvZSI~IkpheSI~~~.yqdXieUqwGBmQ9CXCM1fLa3KlvR_ZCYM8XTP
-   LmwiY7MTer7mqQ8ddClbZLStEU370N70FPj_hBYwNBDHdxV-zQ~A2Ox4aa93hHTdfKUBU
-   s-zfSIf5nfZLULjbITtl-uQODCkniqi7x3qI6CkGh0jOs7cVk7MaQ6lKR6mGvUVejqMg~
-   W-xQwLmaMMvvzmaU0VRGLIK6FECNxC4c6Zv4meZiChI~MUTvW_Aa6xVBEYoX1DyNC1kkC
-   -gLrztA3yL9kCywmlg~WznktNpZrjpJ_RdpoZxIhA5U_zD5OCLXvhn1rltPyVA~wYtyc3
-   YVc0_YA8lvJ0-d7ichs1KL1muGzPLMCreiT7E~T9AMMyntB3_l888vrxw5fyUNhd4Kzgj
-   yk3QZ-3u2uBk~ybjPKR15uCNYOEEgtiQ7FVx3wuu4XwEzi5mfOKbPVfc~Vx6HR1npm64b
-   RJw6TXuY_takEa_5UKd8VQM1NhudwV0
+   LCJnaXZlbl9uYW1lIiwiZW1haWwiLCJhZGRyZXNzIiwiYWdlX292ZXJfMjEiXSwicHJlc
+   2VudGF0aW9uX2tleSI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwidXNlIjoic2lnbi
+   IsIngiOiI3cm5BUk94LWNidEMxVEJWREF2NU9NcmtNNnBzUjk1aEZQRlhiTmlZRTRjIiw
+   ieSI6IndEZ1VVM3JHNUtWUXNreFBMc3djODE5WVJULS1sNkg0ZnhCRE5aWHA0dGsifX0.
+   MTcxNDUyMTYwMA~MTcxNzE5OTk5OQ~IkRvZSI~IkpheSI~~~.NqAg6k25VM19zO-UkoQQ
+   VXKeGfSj9vl1FJIJTsKwovWj2pvBFGnc7vCo1SXQFhzZrRgyYs47p1OMxrrQ9_hqDQ~vu
+   bsxZsyqlvKkFZHyoBY4dQjRzr6SU9fNoHGPDezxUThvj6DPi5VTd3EpTKVOlvgC0uyd5S
+   Wtkj6Qs0kOIwhCg~02LqsJSB_C97dsRQKJDIhjpMSPAw3Ne01D9Obc_IN4I~H6ZuXcZtl
+   8ypBKiR27sf5hcPlCCClKJaNHBN3BQz0XA~qFchDr1QKwNL_y57kxdXpXiz9E0LpVARRk
+   5Y5yLST9U~8u0ZboyWQYjuRADZQS768KN8qZGYRRKoXs141GGwAOs~FWx8zzRvSd9dKEK
+   3lCU4-vcw4nQ_iVATWYe6Vv_p4is~ZegnVTr972ArSvUJrUju4S3ICWYhAx0W7x-Lo_v2
+   T18~vSZX0v03tSvxfiUSbzl2SwwOzD4-35QPMwQhhelzHqI
 
             Figure 32: Presented JWP (in compact serialization)
 
@@ -1802,7 +1722,29 @@ Appendix C.  Document History
 
    [[ To be removed from the final specification ]]
 
+   -07
+
+   *  Changing primary editor
+   *  Update registry template for algorithms to account for integer
+      CBOR labels
+   *  Restylize initial registry entries for readability
+   *  Defer BBS key definition to
+      [I-D.ietf-cose-bls-key-representations]
+   *  Modify example generation to use proof_key and presentation_key
+      names
+   *  Change proof_jwk to proof_key and presentation_jwk to
+      presentation_key to better represent that the key may be JSON or
+      CBOR-formatted.
+   *  Moved the registry for proof_key and presentation_key to JWP where
+      they are defined.  Consolidated usage, purpose and requirements
+      from algorith musage under these definitions.
+   *  Combined BBS-PROOF into BBS
+
+   -06
+
    *  Update reference to new repository home
+   *  Fixed #77: Removed vestigial use of presentation_header.
+   *  Correct pjwk to presentation_jwk
 
    -05
 
@@ -1864,11 +1806,6 @@ Appendix C.  Document History
 
 Authors' Addresses
 
-   Jeremie Miller
-   Ping Identity
-   Email: jmiller@pingidentity.com
-
-
    Michael B. Jones
    Self-Issued Consulting
    Email: michael_b_jones@hotmail.com
@@ -1878,3 +1815,8 @@ Authors' Addresses
    David Waite
    Ping Identity
    Email: dwaite+jwp@pingidentity.com
+
+
+   Jeremie Miller
+   Ping Identity
+   Email: jmiller@pingidentity.com
